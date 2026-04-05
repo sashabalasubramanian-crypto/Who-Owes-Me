@@ -247,7 +247,7 @@
       width: 300px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r); box-shadow: var(--sh-lg);
-      z-index: 150; overflow: hidden;
+      z-index: 150; overflow-y: auto; max-height: calc(100vh - 90px);
       opacity: 0; pointer-events: none; transform: translateY(-6px);
       transition: opacity .18s, transform .18s;
     }
@@ -1075,7 +1075,7 @@
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                   <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/>
                 </svg>
-                Show QR code
+                <span id="pd-qr-label">Show QR code</span>
               </button>
               <div class="pd-qr-box" id="pd-qr-box">
                 <div class="pd-qr-frame"><img id="pd-qr-img" src="" alt="QR code" /></div>
@@ -2021,7 +2021,7 @@ function openProfileDrop() {
 
   // Reset QR box to closed each time the dropdown opens
   document.getElementById('pd-qr-box').classList.remove('open');
-  document.getElementById('pd-qr-toggle').childNodes[document.getElementById('pd-qr-toggle').childNodes.length-1].textContent = ' Show QR code';
+  document.getElementById('pd-qr-label').textContent = 'Show QR code';
 
   // Populate invite link and QR
   renderShareSection();
@@ -2210,7 +2210,7 @@ document.getElementById('pd-qr-toggle').addEventListener('click', e => {
   const toggle = document.getElementById('pd-qr-toggle');
   const isOpen = box.classList.toggle('open');
   toggle.querySelector('svg').style.opacity = isOpen ? '.5' : '1';
-  toggle.childNodes[toggle.childNodes.length - 1].textContent = isOpen ? ' Hide QR code' : ' Show QR code';
+  document.getElementById('pd-qr-label').textContent = isOpen ? 'Hide QR code' : 'Show QR code';
 });
 
 /* ── Invite banner (shown after login if ?invite= is in URL) ── */
