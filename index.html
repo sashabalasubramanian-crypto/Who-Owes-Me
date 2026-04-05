@@ -1613,14 +1613,17 @@ function renderFP() {
 document.getElementById('fp-add').addEventListener('click', ()=>{
   const input = document.getElementById('fp-input');
   const msg   = document.getElementById('fp-msg');
-  msg.className='fp-msg'; input.classList.remove('err');
+  input.classList.remove('err');
   const r = sendReq(input.value);
-  if (r.ok) {
-    msg.textContent=r.data; msg.classList.add('ok'); input.value='';
-  } else {
-    msg.textContent=r.message; msg.classList.add('err'); input.classList.add('err');
-  }
+  // renderFP resets msg.className — call it first, then set the message so it stays visible
   renderFP(); updateBadge(); renderList();
+  if (r.ok) {
+    input.value='';
+    msg.textContent=r.data; msg.classList.add('ok');
+  } else {
+    input.classList.add('err');
+    msg.textContent=r.message; msg.classList.add('err');
+  }
 });
 
 document.getElementById('fp-input').addEventListener('keydown', e=>{
@@ -2257,16 +2260,14 @@ document.getElementById('invite-accept').addEventListener('click', () => {
   const inviteUser = getInviteParam();
   if (!inviteUser) return;
   const result = sendReq(inviteUser);
-  const banner  = document.getElementById('invite-banner');
-  banner.classList.remove('show');
+  document.getElementById('invite-banner').classList.remove('show');
   clearInviteParam();
-  // Open friends panel so user sees the result
+  // openFP calls renderFP internally — open first so panel is ready, then set message
   openFP();
-  // Show a quick message in the panel
+  updateBadge(); renderList();
   const msg = document.getElementById('fp-msg');
   msg.textContent = result.ok ? result.data : result.message;
   msg.className   = `fp-msg ${result.ok ? 'ok' : 'err'}`;
-  renderFP(); updateBadge(); renderList();
 });
 
 document.getElementById('invite-dismiss').addEventListener('click', () => {
