@@ -213,7 +213,21 @@
       display: flex; align-items: center; gap: 7px;
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: 99px; padding: 5px 10px 5px 6px;
+      cursor: pointer; position: relative;
+      transition: border-color .15s, background .15s;
+      user-select: none;
     }
+
+    .user-pill:hover { border-color: var(--border-mid); background: #f0efee; }
+    .user-pill.open  { border-color: var(--border-mid); background: #f0efee; }
+
+    /* Tiny chevron */
+    .user-pill-chevron {
+      width: 12px; height: 12px; flex-shrink: 0; color: var(--text-muted);
+      transition: transform .2s;
+    }
+
+    .user-pill.open .user-pill-chevron { transform: rotate(180deg); }
 
     .user-pill-avatar {
       width: 22px; height: 22px; border-radius: 50%;
@@ -226,6 +240,182 @@
       font-size: 13px; font-weight: 600; color: var(--text-mid);
       max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+
+    /* ── Profile dropdown ─────────────────────────── */
+    .profile-drop {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      width: 300px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); box-shadow: var(--sh-lg);
+      z-index: 150; overflow: hidden;
+      opacity: 0; pointer-events: none; transform: translateY(-6px);
+      transition: opacity .18s, transform .18s;
+    }
+
+    .profile-drop.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+    .pd-header {
+      display: flex; align-items: center; gap: 11px;
+      padding: 16px 16px 14px; border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .pd-av {
+      width: 38px; height: 38px; border-radius: 50%;
+      font-size: 13px; font-weight: 800; color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .pd-username { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
+    .pd-sub      { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+    .pd-body { padding: 14px 16px 16px; }
+
+    /* Inline section title inside dropdown */
+    .pd-sec-ttl {
+      font-size: 10px; font-weight: 800; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; margin-top: 14px;
+    }
+
+    .pd-sec-ttl:first-child { margin-top: 0; }
+
+    .pd-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+
+    .pd-field label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    .pd-field input {
+      font-family: inherit; font-size: 13px; color: var(--text);
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); padding: 9px 11px; outline: none; width: 100%;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+
+    .pd-field input:focus { border-color: var(--text-mid); background: #fff; box-shadow: 0 0 0 3px rgba(55,65,81,.08); }
+    .pd-field input.err   { border-color: var(--red); background: var(--red-soft); }
+
+    .pd-save {
+      font-family: inherit; font-size: 12px; font-weight: 700; color: #fff;
+      background: var(--text); border: none; border-radius: var(--r-xs);
+      padding: 8px 14px; cursor: pointer; width: 100%; margin-top: 4px;
+      transition: background .15s, transform .1s;
+    }
+
+    .pd-save:hover  { background: #1f2937; }
+    .pd-save:active { transform: scale(.98); }
+
+    /* Feedback messages inside the dropdown */
+    .pd-msg {
+      font-size: 12px; border-radius: var(--r-xs); padding: 7px 10px;
+      margin-top: 6px; display: none;
+    }
+
+    .pd-msg.ok  { display: block; color: var(--green); background: var(--green-soft); border: 1px solid var(--green-border); }
+    .pd-msg.err { display: block; color: var(--red);   background: var(--red-soft);   border: 1px solid var(--red-border); }
+
+    .pd-divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+    /* ── Share / Invite section inside profile drop ── */
+    .pd-invite-url {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); padding: 8px 10px;
+      margin-bottom: 8px;
+    }
+
+    .pd-invite-url span {
+      font-size: 12px; color: var(--text-mid); flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pd-copy-btn {
+      font-family: inherit; font-size: 11px; font-weight: 700;
+      color: var(--text); background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: var(--r-xs);
+      padding: 5px 9px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+
+    .pd-copy-btn:hover      { border-color: var(--border-mid); }
+    .pd-copy-btn.copied     { color: var(--green); border-color: var(--green-border); background: var(--green-soft); }
+
+    /* "Show QR" toggle */
+    .pd-qr-toggle {
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); background: none; border: none;
+      cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px;
+      transition: color .15s;
+    }
+
+    .pd-qr-toggle:hover { color: var(--text); }
+    .pd-qr-toggle svg { width: 13px; height: 13px; }
+
+    /* QR code container (collapsible) */
+    .pd-qr-box {
+      display: none; flex-direction: column; align-items: center;
+      gap: 10px; margin-top: 12px;
+    }
+
+    .pd-qr-box.open { display: flex; }
+
+    .pd-qr-frame {
+      width: 160px; height: 160px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .pd-qr-frame img { width: 100%; height: 100%; display: block; }
+
+    .pd-qr-hint {
+      font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5;
+    }
+
+    /* Banner shown at the top of the page when an invite is detected in the URL */
+    .invite-banner {
+      background: linear-gradient(135deg, var(--purple-soft), #faf5ff);
+      border-bottom: 1px solid var(--purple-border);
+      padding: 13px 24px; display: none;
+    }
+
+    .invite-banner.show { display: block; }
+
+    .invite-banner-inner {
+      max-width: 760px; margin: 0 auto;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+
+    .invite-banner-text {
+      flex: 1; font-size: 14px; font-weight: 600; color: var(--purple);
+      min-width: 0;
+    }
+
+    .invite-banner-text span { color: var(--text); }
+
+    .invite-banner-actions { display: flex; gap: 7px; flex-shrink: 0; }
+
+    .invite-btn-accept {
+      font-family: inherit; font-size: 12px; font-weight: 700; color: #fff;
+      background: var(--purple); border: none; border-radius: 99px;
+      padding: 7px 14px; cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+
+    .invite-btn-accept:hover  { background: #6d28d9; }
+    .invite-btn-accept:active { transform: scale(.97); }
+
+    .invite-btn-dismiss {
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); background: transparent;
+      border: 1.5px solid var(--purple-border); border-radius: 99px;
+      padding: 6px 13px; cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+
+    .invite-btn-dismiss:hover { color: var(--text); border-color: var(--border-mid); }
 
     .hdr-btn {
       font-size: 12px; font-weight: 600; color: var(--text-muted);
@@ -853,10 +1043,80 @@
       </div>
       <span class="header-title">Who Owes Me</span>
       <div class="header-right">
-        <!-- User pill -->
-        <div class="user-pill" id="user-pill">
+        <!-- User pill + profile dropdown -->
+        <div class="user-pill" id="user-pill" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
           <div class="user-pill-avatar" id="user-pill-av"></div>
           <span class="user-pill-name" id="user-pill-name"></span>
+          <!-- Chevron -->
+          <svg class="user-pill-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+
+          <!-- Profile dropdown (positioned inside the pill for correct anchoring) -->
+          <div class="profile-drop" id="profile-drop">
+            <!-- Header: avatar + current username -->
+            <div class="pd-header">
+              <div class="pd-av" id="pd-av"></div>
+              <div>
+                <div class="pd-username" id="pd-username-display"></div>
+                <div class="pd-sub">Account settings</div>
+              </div>
+            </div>
+
+            <div class="pd-body">
+              <!-- Invite / Share link -->
+              <div class="pd-sec-ttl">Your Invite Link</div>
+              <div class="pd-invite-url">
+                <span id="pd-invite-url-text">—</span>
+                <button class="pd-copy-btn" id="pd-copy-btn" type="button">Copy</button>
+              </div>
+              <button class="pd-qr-toggle" id="pd-qr-toggle" type="button">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/>
+                </svg>
+                Show QR code
+              </button>
+              <div class="pd-qr-box" id="pd-qr-box">
+                <div class="pd-qr-frame"><img id="pd-qr-img" src="" alt="QR code" /></div>
+                <div class="pd-qr-hint">Friends scan this to add you instantly</div>
+              </div>
+
+              <div class="pd-divider"></div>
+
+              <!-- Change username -->
+              <div class="pd-sec-ttl">Change Username</div>
+              <div class="pd-field">
+                <label for="pd-new-user">New username</label>
+                <input type="text" id="pd-new-user" placeholder="Enter new username" autocomplete="off" spellcheck="false" />
+              </div>
+              <div class="pd-field">
+                <label for="pd-user-pass">Current password</label>
+                <input type="password" id="pd-user-pass" placeholder="Confirm with password" autocomplete="current-password" />
+              </div>
+              <button class="pd-save" id="pd-save-user" type="button">Save Username</button>
+              <div class="pd-msg" id="pd-user-msg"></div>
+
+              <div class="pd-divider"></div>
+
+              <!-- Change password -->
+              <div class="pd-sec-ttl">Change Password</div>
+              <div class="pd-field">
+                <label for="pd-cur-pass">Current password</label>
+                <input type="password" id="pd-cur-pass" placeholder="••••••••" autocomplete="current-password" />
+              </div>
+              <div class="pd-field">
+                <label for="pd-new-pass">New password</label>
+                <input type="password" id="pd-new-pass" placeholder="••••••••" autocomplete="new-password" />
+              </div>
+              <div class="pd-field">
+                <label for="pd-conf-pass">Confirm new password</label>
+                <input type="password" id="pd-conf-pass" placeholder="••••••••" autocomplete="new-password" />
+              </div>
+              <button class="pd-save" id="pd-save-pass" type="button">Save Password</button>
+              <div class="pd-msg" id="pd-pass-msg"></div>
+            </div>
+          </div>
         </div>
         <!-- Friends -->
         <button class="hdr-btn friends-btn" id="btn-friends" type="button">
@@ -878,6 +1138,19 @@
       </div>
     </div>
   </header>
+
+  <!-- Invite banner: shown when page is opened via an invite link -->
+  <div class="invite-banner" id="invite-banner">
+    <div class="invite-banner-inner">
+      <div class="invite-banner-text">
+        <span id="invite-banner-text">Add friend from invite link</span>
+      </div>
+      <div class="invite-banner-actions">
+        <button class="invite-btn-accept"  id="invite-accept"  type="button">Add Friend</button>
+        <button class="invite-btn-dismiss" id="invite-dismiss" type="button">Dismiss</button>
+      </div>
+    </div>
+  </div>
 
   <div class="wrap">
 
@@ -913,7 +1186,7 @@
           <div class="fld">
             <label for="f-name">Person</label>
             <div class="person-wrap">
-              <input type="text" id="f-name" placeholder="e.g. Alex" autocomplete="off" />
+              <input type="text" id="f-name" placeholder="e.g. Laz" autocomplete="off" />
               <div class="ac-drop" id="ac-drop"></div>
             </div>
           </div>
@@ -924,7 +1197,7 @@
         </div>
         <div class="fld fld-reason">
           <label for="f-why">Reason</label>
-          <input type="text" id="f-why" placeholder="e.g. Dinner at Nobu" autocomplete="off" />
+          <input type="text" id="f-why" placeholder="e.g. Jew" autocomplete="off" />
         </div>
         <button class="add-btn" id="btn-add" type="button">+ Add Debt</button>
       </div>
@@ -1254,6 +1527,7 @@ function startSession(username) {
 
   updateBadge();
   render();
+  checkInviteBanner();
 }
 
 function endSession() {
@@ -1265,7 +1539,8 @@ function endSession() {
   document.getElementById('d-owed').classList.add('on');
   document.getElementById('d-iowe').classList.remove('on');
   document.getElementById('form-shell').className='form-shell owed';
-  closeFP(); closeModal();
+  closeFP(); closeModal(); closeProfileDrop();
+  document.getElementById('invite-banner').classList.remove('show');
   appScreen.style.display='none';
   authScreen.style.display='flex';
   setTimeout(()=>aUser.focus(), 50);
@@ -1722,6 +1997,281 @@ document.getElementById('debt-list').addEventListener('click', e=>{
   } else if (unl) {
     unlinkPerson(unl.dataset.unlink); renderList();
   }
+});
+
+/* ══════════════════════════════════════════════════
+   PROFILE DROPDOWN
+══════════════════════════════════════════════════ */
+const userPill   = document.getElementById('user-pill');
+const profileDrop= document.getElementById('profile-drop');
+
+function openProfileDrop() {
+  // Populate display fields with current username
+  const color = nameColor(me);
+  const pdAv  = document.getElementById('pd-av');
+  pdAv.style.background = color;
+  pdAv.textContent = initials(me);
+  document.getElementById('pd-username-display').textContent = me;
+
+  // Clear all inputs and messages
+  ['pd-new-user','pd-user-pass','pd-cur-pass','pd-new-pass','pd-conf-pass']
+    .forEach(id => { const el=document.getElementById(id); el.value=''; el.classList.remove('err'); });
+  ['pd-user-msg','pd-pass-msg']
+    .forEach(id => { const el=document.getElementById(id); el.className='pd-msg'; });
+
+  // Reset QR box to closed each time the dropdown opens
+  document.getElementById('pd-qr-box').classList.remove('open');
+  document.getElementById('pd-qr-toggle').childNodes[document.getElementById('pd-qr-toggle').childNodes.length-1].textContent = ' Show QR code';
+
+  // Populate invite link and QR
+  renderShareSection();
+
+  userPill.classList.add('open');
+  profileDrop.classList.add('open');
+  userPill.setAttribute('aria-expanded','true');
+}
+
+function closeProfileDrop() {
+  userPill.classList.remove('open');
+  profileDrop.classList.remove('open');
+  userPill.setAttribute('aria-expanded','false');
+}
+
+// Toggle on pill click; stop propagation so the document listener doesn't immediately close it
+userPill.addEventListener('click', e => {
+  // Don't toggle if the click originated inside an input or button inside the dropdown
+  if (e.target.closest('input, button')) return;
+  profileDrop.classList.contains('open') ? closeProfileDrop() : openProfileDrop();
+});
+
+// Close when clicking anywhere outside
+document.addEventListener('click', e => {
+  if (!userPill.contains(e.target)) closeProfileDrop();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeProfileDrop();
+});
+
+/* ── Change Username ─────────────────────────────── */
+document.getElementById('pd-save-user').addEventListener('click', async () => {
+  const newUserEl  = document.getElementById('pd-new-user');
+  const passEl     = document.getElementById('pd-user-pass');
+  const msgEl      = document.getElementById('pd-user-msg');
+
+  [newUserEl, passEl].forEach(e => e.classList.remove('err'));
+  msgEl.className = 'pd-msg';
+
+  const newUsername = newUserEl.value.trim();
+  const password    = passEl.value;
+
+  if (!newUsername) { newUserEl.classList.add('err'); showPdMsg('pd-user-msg','err','Enter a new username.'); return; }
+  if (!password)    { passEl.classList.add('err');    showPdMsg('pd-user-msg','err','Enter your current password.'); return; }
+
+  // Validate format
+  if (newUsername.length < 2) { newUserEl.classList.add('err'); showPdMsg('pd-user-msg','err','Username must be at least 2 characters.'); return; }
+  if (!/^[a-zA-Z0-9_.\-]+$/.test(newUsername)) { newUserEl.classList.add('err'); showPdMsg('pd-user-msg','err','Letters, numbers, _ . - only.'); return; }
+
+  // Verify password
+  const check = await login(me, password);
+  if (!check.ok) { passEl.classList.add('err'); showPdMsg('pd-user-msg','err', check.message); return; }
+
+  // Check new name not already taken (unless same person, case change)
+  if (newUsername.toLowerCase() !== me.toLowerCase() && findAcct(newUsername)) {
+    newUserEl.classList.add('err'); showPdMsg('pd-user-msg','err','Username already taken.'); return;
+  }
+
+  // Update account record
+  const accts = accounts();
+  const idx   = accts.findIndex(a => a.username.toLowerCase() === me.toLowerCase());
+  if (idx === -1) return;
+
+  const oldMe = me;
+  accts[idx].username = newUsername;
+  lsSet(K_ACCTS, accts);
+
+  // Move all user-keyed data to new key
+  ['debts','friends','requests','links'].forEach(type => {
+    const oldKey = `wom-${type}-${oldMe.toLowerCase()}`;
+    const newKey = `wom-${type}-${newUsername.toLowerCase()}`;
+    const data   = localStorage.getItem(oldKey);
+    if (data !== null) { localStorage.setItem(newKey, data); }
+    if (oldMe.toLowerCase() !== newUsername.toLowerCase()) localStorage.removeItem(oldKey);
+  });
+
+  // Update session
+  me = newUsername;
+  lsSet(K_SESS, { username: me });
+
+  // Update header pill
+  const color = nameColor(me);
+  const av    = document.getElementById('user-pill-av');
+  av.style.background = color; av.textContent = initials(me);
+  document.getElementById('user-pill-name').textContent = me;
+
+  // Update dropdown header
+  const pdAv = document.getElementById('pd-av');
+  pdAv.style.background = color; pdAv.textContent = initials(me);
+  document.getElementById('pd-username-display').textContent = me;
+
+  newUserEl.value = ''; passEl.value = '';
+  showPdMsg('pd-user-msg','ok',`Username updated to "${esc(me)}".`);
+});
+
+/* ── Change Password ─────────────────────────────── */
+document.getElementById('pd-save-pass').addEventListener('click', async () => {
+  const curEl  = document.getElementById('pd-cur-pass');
+  const newEl  = document.getElementById('pd-new-pass');
+  const confEl = document.getElementById('pd-conf-pass');
+  const msgEl  = document.getElementById('pd-pass-msg');
+
+  [curEl, newEl, confEl].forEach(e => e.classList.remove('err'));
+  msgEl.className = 'pd-msg';
+
+  const cur  = curEl.value;
+  const nw   = newEl.value;
+  const conf = confEl.value;
+
+  if (!cur)  { curEl.classList.add('err');  showPdMsg('pd-pass-msg','err','Enter your current password.'); return; }
+  if (!nw)   { newEl.classList.add('err');  showPdMsg('pd-pass-msg','err','Enter a new password.'); return; }
+  if (!conf) { confEl.classList.add('err'); showPdMsg('pd-pass-msg','err','Confirm the new password.'); return; }
+  if (nw.length < 6) { newEl.classList.add('err'); showPdMsg('pd-pass-msg','err','Password must be at least 6 characters.'); return; }
+  if (nw !== conf)   { newEl.classList.add('err'); confEl.classList.add('err'); showPdMsg('pd-pass-msg','err',"Passwords don't match."); return; }
+
+  // Verify current password
+  const check = await login(me, cur);
+  if (!check.ok) { curEl.classList.add('err'); showPdMsg('pd-pass-msg','err', check.message); return; }
+
+  // Save new hash
+  const accts = accounts();
+  const idx   = accts.findIndex(a => a.username.toLowerCase() === me.toLowerCase());
+  if (idx === -1) return;
+  accts[idx].passwordHash = await sha256(nw);
+  lsSet(K_ACCTS, accts);
+
+  curEl.value=''; newEl.value=''; confEl.value='';
+  showPdMsg('pd-pass-msg','ok','Password updated successfully.');
+});
+
+/** Show a message inside the profile dropdown */
+function showPdMsg(id, type, text) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className   = `pd-msg ${type}`;
+}
+
+/* ══════════════════════════════════════════════════
+   INVITE LINK & QR CODE
+   ──────────────────────────────────────────────
+   Invite URL format:  <page-url>?invite=<username>
+   QR image:  api.qrserver.com (free public API,
+              no key required, just an image URL)
+══════════════════════════════════════════════════ */
+
+/** Build the shareable invite URL for the logged-in user */
+function buildInviteURL(username) {
+  const base = window.location.href.split('?')[0];
+  return `${base}?invite=${encodeURIComponent(username)}`;
+}
+
+/** Populate the share section every time the profile drop opens */
+function renderShareSection() {
+  const url     = buildInviteURL(me);
+  const urlEl   = document.getElementById('pd-invite-url-text');
+  urlEl.textContent = url;
+  urlEl.title       = url;
+
+  // Pre-load QR image src but keep box hidden until toggled
+  document.getElementById('pd-qr-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=111827&margin=8`;
+}
+
+// Copy button
+document.getElementById('pd-copy-btn').addEventListener('click', () => {
+  const url = buildInviteURL(me);
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('pd-copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback for browsers that block clipboard without HTTPS
+    const btn = document.getElementById('pd-copy-btn');
+    btn.textContent = 'Copy failed';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+});
+
+// QR toggle
+document.getElementById('pd-qr-toggle').addEventListener('click', e => {
+  e.stopPropagation(); // don't close the dropdown
+  const box    = document.getElementById('pd-qr-box');
+  const toggle = document.getElementById('pd-qr-toggle');
+  const isOpen = box.classList.toggle('open');
+  toggle.querySelector('svg').style.opacity = isOpen ? '.5' : '1';
+  toggle.childNodes[toggle.childNodes.length - 1].textContent = isOpen ? ' Hide QR code' : ' Show QR code';
+});
+
+/* ── Invite banner (shown after login if ?invite= is in URL) ── */
+
+/** Read the invite username from the URL query string, if present */
+function getInviteParam() {
+  try {
+    return new URLSearchParams(window.location.search).get('invite') || null;
+  } catch(_) { return null; }
+}
+
+/** Strip the ?invite= param from the URL without reloading */
+function clearInviteParam() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('invite');
+  window.history.replaceState({}, '', url.toString());
+}
+
+/**
+ * Check for a pending invite and show the banner.
+ * Called after login so we know who the current user is.
+ */
+function checkInviteBanner() {
+  const inviteUser = getInviteParam();
+  if (!inviteUser) return;
+
+  const banner = document.getElementById('invite-banner');
+
+  // Don't show if it's your own link or already friends
+  if (inviteUser.toLowerCase() === me.toLowerCase()) { clearInviteParam(); return; }
+  if (getFriends(me).map(f=>f.toLowerCase()).includes(inviteUser.toLowerCase())) {
+    clearInviteParam(); return;
+  }
+  // Make sure the invited user actually exists
+  if (!findAcct(inviteUser)) { clearInviteParam(); return; }
+
+  document.getElementById('invite-banner-text').innerHTML =
+    `<span>${esc(inviteUser)}</span> wants to connect — add them as a friend?`;
+
+  banner.classList.add('show');
+}
+
+document.getElementById('invite-accept').addEventListener('click', () => {
+  const inviteUser = getInviteParam();
+  if (!inviteUser) return;
+  const result = sendReq(inviteUser);
+  const banner  = document.getElementById('invite-banner');
+  banner.classList.remove('show');
+  clearInviteParam();
+  // Open friends panel so user sees the result
+  openFP();
+  // Show a quick message in the panel
+  const msg = document.getElementById('fp-msg');
+  msg.textContent = result.ok ? result.data : result.message;
+  msg.className   = `fp-msg ${result.ok ? 'ok' : 'err'}`;
+  renderFP(); updateBadge(); renderList();
+});
+
+document.getElementById('invite-dismiss').addEventListener('click', () => {
+  document.getElementById('invite-banner').classList.remove('show');
+  clearInviteParam();
 });
 
 /* ── Init ─────────────────────────────────────────── */
