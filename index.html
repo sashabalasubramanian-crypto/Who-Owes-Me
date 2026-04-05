@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who Owes Me</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════ */
+    :root {
+      --bg:          #f8f7f6;
+      --surface:     #ffffff;
+      --surface-2:   #faf9f8;
+      --text:        #111827;
+      --text-mid:    #374151;
+      --text-muted:  #9ca3af;
+      --border:      #e5e7eb;
+      --border-mid:  #d1d5db;
+
+      --red:         #e11d48;
+      --red-soft:    #fdf2f4;
+      --red-border:  #fecdd3;
+
+      --green:       #059669;
+      --green-soft:  #ecfdf5;
+      --green-border:#a7f3d0;
+
+      --blue:        #2563eb;
+      --blue-soft:   #eff6ff;
+      --blue-border: #bfdbfe;
+
+      --amber:       #d97706;
+      --amber-soft:  #fffbeb;
+      --amber-border:#fde68a;
+
+      --purple:      #7c3aed;
+      --purple-soft: #f5f3ff;
+      --purple-border:#ddd6fe;
+
+      --r:   14px;
+      --r-sm: 9px;
+      --r-xs: 6px;
+
+      --sh-xs: 0 1px 2px rgba(0,0,0,0.05);
+      --sh-sm: 0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+      --sh-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --sh-lg: 0 12px 32px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+    }
+
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    input, button { font-family: inherit; }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; }
+    input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+    /* ═══════════════════════════════════════════════
+       AUTH SCREEN
+    ═══════════════════════════════════════════════ */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: linear-gradient(160deg, #f8f7f6 0%, #edecea 100%);
+    }
+
+    .auth-wordmark {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .auth-wordmark-icon {
+      width: 42px; height: 42px;
+      background: var(--red);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(225,29,72,0.35);
+    }
+
+    .auth-wordmark-icon svg { width: 20px; height: 20px; fill: #fff; }
+
+    .auth-wordmark-text {
+      font-size: 19px; font-weight: 700; letter-spacing: -0.5px;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px 28px;
+      width: 100%; max-width: 390px;
+      box-shadow: var(--sh-lg);
+    }
+
+    .auth-heading { font-size: 21px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .auth-sub     { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+    .auth-tabs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); padding: 3px; margin-bottom: 20px;
+    }
+
+    .auth-tab {
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      background: transparent; border: none; border-radius: 6px;
+      padding: 9px; cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+
+    .auth-tab.active {
+      background: var(--surface); color: var(--text);
+      box-shadow: var(--sh-sm);
+    }
+
+    .auth-tab:not(.active):hover { color: var(--text); }
+
+    .auth-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
+
+    .auth-field label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .07em;
+    }
+
+    .auth-field input {
+      font-size: 14px; color: var(--text); background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      padding: 11px 13px; outline: none; width: 100%;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+
+    .auth-field input:focus  { border-color: var(--text-mid); background: #fff; box-shadow: 0 0 0 3px rgba(55,65,81,.08); }
+    .auth-field input.err    { border-color: var(--red); background: var(--red-soft); }
+    .auth-field input.err:focus { box-shadow: 0 0 0 3px rgba(225,29,72,.1); }
+
+    .auth-alert {
+      font-size: 13px; color: var(--red); background: var(--red-soft);
+      border: 1px solid var(--red-border); border-radius: var(--r-xs);
+      padding: 10px 12px; margin-bottom: 12px; display: none;
+    }
+
+    .auth-alert.show { display: block; }
+
+    .auth-btn {
+      font-size: 14px; font-weight: 600; color: #fff;
+      background: var(--text); border: none; border-radius: var(--r-sm);
+      padding: 12px; cursor: pointer; width: 100%; margin-top: 4px;
+      letter-spacing: -.1px;
+      transition: background .15s, transform .1s, box-shadow .15s;
+    }
+
+    .auth-btn:hover  { background: #1f2937; box-shadow: var(--sh-md); }
+    .auth-btn:active { transform: scale(.98); }
+    .auth-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .auth-note {
+      text-align: center; font-size: 12px; color: var(--text-muted);
+      margin-top: 18px; line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════
+       APP SCREEN
+    ═══════════════════════════════════════════════ */
+    #app-screen { display: none; min-height: 100vh; }
+
+    /* ─── Header ─────────────────────────────────── */
+    .header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky; top: 0; z-index: 90;
+    }
+
+    .header-inner {
+      max-width: 760px; margin: 0 auto; height: 62px;
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .logo-mark {
+      width: 34px; height: 34px; background: var(--red); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(225,29,72,.3);
+    }
+
+    .logo-mark svg { width: 17px; height: 17px; fill: #fff; }
+
+    .header-title {
+      font-size: 17px; font-weight: 700; letter-spacing: -.4px; flex: 1;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    .user-pill {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 99px; padding: 5px 10px 5px 6px;
+    }
+
+    .user-pill-avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      font-size: 9px; font-weight: 800; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .user-pill-name {
+      font-size: 13px; font-weight: 600; color: var(--text-mid);
+      max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .hdr-btn {
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      background: transparent; border: 1.5px solid var(--border);
+      border-radius: 99px; padding: 6px 13px; cursor: pointer;
+      display: flex; align-items: center; gap: 5px; white-space: nowrap;
+      transition: color .15s, border-color .15s, background .15s;
+      position: relative;
+    }
+
+    .hdr-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .hdr-btn:hover  { color: var(--text); border-color: var(--border-mid); background: var(--bg); }
+
+    .hdr-btn.friends-btn:hover { color: var(--purple); border-color: var(--purple-border); background: var(--purple-soft); }
+    .hdr-btn.logout-btn:hover  { color: var(--red);    border-color: var(--red-border);    background: var(--red-soft); }
+
+    .notif-dot {
+      position: absolute; top: -4px; right: -4px;
+      min-width: 16px; height: 16px;
+      background: var(--red); color: #fff;
+      font-size: 9px; font-weight: 800;
+      border-radius: 99px; padding: 0 3px;
+      display: none; align-items: center; justify-content: center;
+      border: 2px solid var(--surface); line-height: 1;
+    }
+
+    .notif-dot.on { display: flex; }
+
+    /* ─── Container ───────────────────────────────── */
+    .wrap { max-width: 760px; margin: 0 auto; padding: 28px 20px 100px; }
+
+    /* ═══════════════════════════════════════════════
+       HERO SUMMARY BAR
+    ═══════════════════════════════════════════════ */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px 22px;
+      margin-bottom: 20px;
+      box-shadow: var(--sh-sm);
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr 1px 1fr;
+      gap: 0;
+    }
+
+    .hero-divider {
+      background: var(--border);
+      margin: 0 20px;
+    }
+
+    .hero-stat { text-align: center; }
+
+    .hero-stat-lbl {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 7px;
+    }
+
+    .hero-stat-val {
+      font-size: 26px; font-weight: 800; letter-spacing: -.8px; line-height: 1;
+    }
+
+    .hero-stat-val.r  { color: var(--red); }
+    .hero-stat-val.b  { color: var(--blue); }
+    .hero-stat-val.gp { color: var(--green); }
+    .hero-stat-val.rn { color: var(--red); }
+    .hero-stat-val.z  { color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════
+       ADD DEBT FORM
+    ═══════════════════════════════════════════════ */
+    .form-shell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 0;
+      margin-bottom: 18px;
+      box-shadow: var(--sh-sm);
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .form-shell.owed { border-top: 3px solid var(--red); }
+    .form-shell.iowe { border-top: 3px solid var(--blue); }
+
+    .form-inner { padding: 18px 20px 20px; }
+
+    .form-label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .07em; margin-bottom: 13px;
+    }
+
+    /* Direction toggle */
+    .dir-toggle {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); padding: 3px; margin-bottom: 15px;
+    }
+
+    .dir-opt {
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      background: transparent; border: none; border-radius: 6px;
+      padding: 9px 10px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+
+    .dir-opt span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor; opacity: .4; flex-shrink: 0;
+      transition: opacity .15s;
+    }
+
+    .dir-opt:hover { color: var(--text); }
+    .dir-opt.on { background: var(--surface); box-shadow: var(--sh-sm); }
+    .dir-opt.on.owed { color: var(--red); }
+    .dir-opt.on.owed span { opacity: 1; }
+    .dir-opt.on.iowe { color: var(--blue); }
+    .dir-opt.on.iowe span { opacity: 1; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 140px; gap: 11px; margin-bottom: 11px; }
+
+    .fld { display: flex; flex-direction: column; gap: 5px; }
+
+    .fld label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    .fld input {
+      font-size: 14px; color: var(--text); background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      padding: 10px 12px; outline: none; width: 100%;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+
+    .fld input:focus { border-color: var(--text-mid); background: #fff; box-shadow: 0 0 0 3px rgba(55,65,81,.08); }
+    .fld input.err   { border-color: var(--red); background: var(--red-soft); }
+    .fld input.err:focus { box-shadow: 0 0 0 3px rgba(225,29,72,.1); }
+
+    .fld-reason { margin-bottom: 13px; }
+
+    /* Person field wrapper for autocomplete */
+    .person-wrap { position: relative; }
+
+    .ac-drop {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); box-shadow: var(--sh-md);
+      z-index: 50; max-height: 200px; overflow-y: auto; display: none;
+    }
+
+    .ac-drop.open { display: block; }
+
+    .ac-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; cursor: pointer; font-size: 14px;
+      transition: background .1s;
+    }
+
+    .ac-item:hover { background: var(--bg); }
+
+    .ac-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      font-size: 9px; font-weight: 800; color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .ac-name { font-weight: 600; flex: 1; }
+    .ac-tag  { font-size: 11px; color: var(--text-muted); }
+
+    .add-btn {
+      font-size: 14px; font-weight: 700; color: #fff;
+      border: none; border-radius: var(--r-sm);
+      padding: 12px; cursor: pointer; width: 100%;
+      letter-spacing: -.1px;
+      transition: filter .15s, transform .1s, box-shadow .15s;
+    }
+
+    .form-shell.owed .add-btn { background: linear-gradient(135deg, #e11d48, #be123c); box-shadow: 0 2px 10px rgba(225,29,72,.3); }
+    .form-shell.iowe .add-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 2px 10px rgba(37,99,235,.3); }
+    .add-btn:hover  { filter: brightness(1.07); box-shadow: var(--sh-md); }
+    .add-btn:active { transform: scale(.98); }
+
+    /* ═══════════════════════════════════════════════
+       FILTER BAR
+    ═══════════════════════════════════════════════ */
+    .filter-bar { display: flex; gap: 7px; margin-bottom: 18px; }
+
+    .fil-btn {
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 99px; padding: 6px 15px; cursor: pointer;
+      transition: all .15s;
+    }
+
+    .fil-btn:hover { border-color: var(--border-mid); color: var(--text); }
+    .fil-btn.on    { background: var(--text); border-color: var(--text); color: #fff; }
+
+    /* ═══════════════════════════════════════════════
+       SECTION HEADERS
+    ═══════════════════════════════════════════════ */
+    .sec-head {
+      display: flex; align-items: center; gap: 9px;
+      margin-bottom: 14px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sec-pip { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sec-pip.r { background: var(--red); }
+    .sec-pip.b { background: var(--blue); }
+    .sec-ttl   { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); flex: 1; }
+    .sec-sum   { font-size: 13px; font-weight: 700; }
+    .sec-sum.r { color: var(--red); }
+    .sec-sum.b { color: var(--blue); }
+    .sec-sum.m { color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════
+       PERSON GROUP
+    ═══════════════════════════════════════════════ */
+    .person-group { margin-bottom: 18px; }
+
+    .person-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 9px; padding: 0 2px;
+    }
+
+    .av {
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: #fff; flex-shrink: 0; letter-spacing: .01em;
+    }
+
+    .av-lg { width: 42px; height: 42px; font-size: 13px; }
+    .av-sm { width: 28px; height: 28px; font-size: 10px; }
+    .av-xs { width: 22px; height: 22px; font-size: 8px; }
+
+    /* Purple ring = linked to a friend */
+    .av-linked { box-shadow: 0 0 0 2px var(--purple), 0 0 0 4px var(--surface); }
+
+    .person-meta { flex: 1; min-width: 0; }
+
+    .person-name-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 3px; }
+
+    .person-name { font-size: 15px; font-weight: 700; letter-spacing: -.2px; }
+    .person-sub  { font-size: 12px; color: var(--text-muted); }
+
+    /* Linked chip */
+    .link-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; color: var(--purple);
+      background: var(--purple-soft); border: 1.5px solid var(--purple-border);
+      border-radius: 99px; padding: 2px 8px 2px 6px;
+    }
+
+    .link-chip svg { width: 9px; height: 9px; flex-shrink: 0; }
+
+    .btn-unlink {
+      background: none; border: none; cursor: pointer; color: #c4b5fd;
+      font-size: 11px; line-height: 1; padding: 0 0 0 2px;
+      transition: color .15s;
+    }
+
+    .btn-unlink:hover { color: var(--red); }
+
+    /* + link friend button */
+    .btn-link {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      background: transparent; border: 1.5px dashed var(--border);
+      border-radius: 99px; padding: 2px 9px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 3px;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+
+    .btn-link:hover { color: var(--purple); border-color: var(--purple-border); background: var(--purple-soft); }
+
+    .person-total { font-size: 15px; font-weight: 800; white-space: nowrap; }
+    .person-total.r  { color: var(--red); }
+    .person-total.b  { color: var(--blue); }
+    .person-total.g  { color: var(--green); }
+
+    /* Link picker dropdown */
+    .link-picker {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); box-shadow: var(--sh-md);
+      margin: -4px 0 10px 54px; overflow: hidden; display: none;
+    }
+
+    .link-picker.open { display: block; }
+
+    .lp-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 13px; cursor: pointer; font-size: 13px; font-weight: 500;
+      transition: background .1s;
+    }
+
+    .lp-item:hover { background: var(--bg); }
+
+    .lp-empty { font-size: 13px; color: var(--text-muted); padding: 11px 13px; font-style: italic; }
+
+    /* ═══════════════════════════════════════════════
+       DEBT CARD
+    ═══════════════════════════════════════════════ */
+    .debt-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 13px 14px;
+      margin-bottom: 7px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: var(--sh-xs);
+      transition: box-shadow .15s, border-color .15s;
+    }
+
+    .debt-card:hover { box-shadow: var(--sh-sm); border-color: var(--border-mid); }
+
+    .debt-card.settled {
+      background: var(--surface-2);
+      border-color: #efefef;
+    }
+
+    .debt-card.settled .debt-reason {
+      color: var(--text-muted);
+      text-decoration: line-through;
+      text-decoration-thickness: 1.5px;
+    }
+
+    .debt-body { flex: 1; min-width: 0; }
+
+    .debt-reason { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .debt-meta   { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    .debt-amt { font-size: 14px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+    .debt-amt.r { color: var(--red); }
+    .debt-amt.b { color: var(--blue); }
+    .debt-card.settled .debt-amt { color: var(--green) !important; }
+
+    .debt-acts { display: flex; gap: 5px; flex-shrink: 0; }
+
+    .act-btn {
+      font-size: 11px; font-weight: 700; border-radius: var(--r-xs);
+      padding: 6px 9px; cursor: pointer; border: 1.5px solid transparent;
+      white-space: nowrap; line-height: 1;
+      transition: background .15s, transform .1s;
+    }
+
+    .act-btn:active { transform: scale(.93); }
+
+    .act-btn.pay  { background: var(--green-soft);  color: var(--green); border-color: var(--green-border); }
+    .act-btn.pay:hover  { background: var(--green-border); }
+    .act-btn.undo { background: var(--amber-soft);  color: var(--amber); border-color: var(--amber-border); }
+    .act-btn.undo:hover { background: var(--amber-border); }
+    .act-btn.del  { background: var(--red-soft);    color: var(--red);   border-color: var(--red-border); }
+    .act-btn.del:hover  { background: var(--red-border); }
+
+    /* ═══════════════════════════════════════════════
+       EMPTY STATE
+    ═══════════════════════════════════════════════ */
+    .empty {
+      text-align: center; padding: 60px 24px; color: var(--text-muted);
+    }
+
+    .empty-icon  { font-size: 42px; margin-bottom: 14px; }
+    .empty-ttl   { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 7px; letter-spacing: -.3px; }
+    .empty-desc  { font-size: 14px; line-height: 1.6; max-width: 300px; margin: 0 auto; }
+
+    .sec-empty { font-size: 13px; color: var(--text-muted); padding: 14px 4px 20px; font-style: italic; }
+
+    /* ═══════════════════════════════════════════════
+       FRIENDS PANEL (slide-in drawer)
+    ═══════════════════════════════════════════════ */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(17,24,39,0.4);
+      z-index: 200; opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+      backdrop-filter: blur(2px);
+    }
+
+    .overlay.on { opacity: 1; pointer-events: all; }
+
+    .friends-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 360px; max-width: 100vw;
+      background: var(--surface); border-left: 1px solid var(--border);
+      box-shadow: var(--sh-lg); z-index: 210;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .25s cubic-bezier(.32,.72,0,1);
+    }
+
+    .friends-panel.on { transform: translateX(0); }
+
+    .fp-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 20px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+
+    .fp-title { font-size: 16px; font-weight: 800; letter-spacing: -.3px; flex: 1; }
+
+    .fp-close {
+      width: 32px; height: 32px; background: var(--bg); color: var(--text-muted);
+      border: 1.5px solid var(--border); border-radius: var(--r-xs); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      font-weight: 600;
+      transition: color .15s, border-color .15s;
+    }
+
+    .fp-close:hover { color: var(--text); border-color: var(--border-mid); }
+
+    .fp-body { flex: 1; overflow-y: auto; }
+
+    .fp-sec { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .fp-sec:last-child { border-bottom: none; }
+
+    .fp-sec-ttl {
+      font-size: 10px; font-weight: 800; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 11px;
+    }
+
+    .add-row { display: flex; gap: 8px; }
+
+    .add-row input {
+      font-size: 14px; color: var(--text); background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      padding: 9px 12px; outline: none; flex: 1;
+      transition: border-color .15s, background .15s;
+    }
+
+    .add-row input:focus { border-color: var(--text-mid); background: #fff; }
+    .add-row input.err   { border-color: var(--red); background: var(--red-soft); }
+
+    .add-row-btn {
+      font-size: 13px; font-weight: 700; color: #fff;
+      background: var(--purple); border: none; border-radius: var(--r-sm);
+      padding: 9px 14px; cursor: pointer; white-space: nowrap;
+      transition: background .15s, transform .1s;
+    }
+
+    .add-row-btn:hover  { background: #6d28d9; }
+    .add-row-btn:active { transform: scale(.96); }
+
+    .fp-msg {
+      font-size: 12px; margin-top: 8px; border-radius: var(--r-xs);
+      padding: 7px 10px; display: none;
+    }
+
+    .fp-msg.ok  { display: block; color: var(--green); background: var(--green-soft); border: 1px solid var(--green-border); }
+    .fp-msg.err { display: block; color: var(--red);   background: var(--red-soft);   border: 1px solid var(--red-border); }
+
+    /* Friend row inside panel */
+    .f-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid #f3f4f6;
+    }
+
+    .f-row:last-child { border-bottom: none; }
+    .f-row-name { font-size: 14px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .f-row-acts { display: flex; gap: 5px; flex-shrink: 0; }
+
+    .f-btn {
+      font-size: 11px; font-weight: 700; border-radius: 6px; padding: 5px 9px;
+      cursor: pointer; border: 1.5px solid transparent; transition: background .15s;
+    }
+
+    .f-btn.accept  { color: var(--green); background: var(--green-soft); border-color: var(--green-border); }
+    .f-btn.accept:hover  { background: var(--green-border); }
+    .f-btn.decline, .f-btn.remove { color: var(--text-muted); background: var(--bg); border-color: var(--border); }
+    .f-btn.decline:hover, .f-btn.remove:hover { color: var(--red); border-color: var(--red-border); }
+
+    /* "View shared" button in friends list */
+    .f-btn.view { color: var(--purple); background: var(--purple-soft); border-color: var(--purple-border); }
+    .f-btn.view:hover { background: var(--purple-border); }
+
+    .fp-empty { font-size: 13px; color: var(--text-muted); font-style: italic; padding: 4px 0 8px; }
+
+    /* ═══════════════════════════════════════════════
+       SHARED VIEW MODAL
+       Shows only the debts between you and one friend.
+       Everything else on your account is HIDDEN.
+    ═══════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(17,24,39,0.5);
+      z-index: 300; display: flex; align-items: flex-start; justify-content: center;
+      padding: 40px 16px 40px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+      backdrop-filter: blur(3px);
+      overflow-y: auto;
+    }
+
+    .modal-overlay.on { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; width: 100%; max-width: 520px;
+      box-shadow: var(--sh-lg); overflow: hidden;
+      transform: translateY(16px);
+      transition: transform .25s cubic-bezier(.32,.72,0,1);
+      flex-shrink: 0;
+    }
+
+    .modal-overlay.on .modal { transform: translateY(0); }
+
+    .modal-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 20px 16px; border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky; top: 0; z-index: 5;
+    }
+
+    .modal-title { font-size: 16px; font-weight: 800; letter-spacing: -.3px; flex: 1; }
+
+    /* Privacy shield badge in modal */
+    .privacy-badge {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 700; color: var(--green);
+      background: var(--green-soft); border: 1.5px solid var(--green-border);
+      border-radius: 99px; padding: 3px 10px 3px 7px;
+    }
+
+    .privacy-badge svg { width: 12px; height: 12px; }
+
+    .modal-close {
+      width: 32px; height: 32px; background: var(--bg); color: var(--text-muted);
+      border: 1.5px solid var(--border); border-radius: var(--r-xs); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      font-weight: 600;
+      transition: color .15s, border-color .15s;
+    }
+
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body { padding: 20px; }
+
+    /* Net balance pill inside modal */
+    .shared-balance {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 18px;
+    }
+
+    .sb-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+    .sb-val   { font-size: 20px; font-weight: 800; letter-spacing: -.5px; }
+
+    .shared-sec-ttl {
+      font-size: 10px; font-weight: 800; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: 9px; margin-top: 16px;
+    }
+
+    .shared-sec-ttl:first-of-type { margin-top: 0; }
+
+    .modal-empty { text-align: center; padding: 36px 20px; color: var(--text-muted); font-size: 14px; }
+    .modal-empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+    /* ─── Responsive ──────────────────────────────── */
+    @media (max-width: 540px) {
+      .hero { grid-template-columns: 1fr 1px 1fr; }
+      .hero > .hero-stat:last-child,
+      .hero > .hero-divider:last-of-type { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .hero-stat-val { font-size: 22px; }
+      .user-pill-name { display: none; }
+      .friends-panel { width: 100vw; }
+      .wrap { padding: 20px 14px 80px; }
+    }
+
+    @media (max-width: 400px) {
+      .debt-card { flex-wrap: wrap; }
+      .debt-acts { flex-direction: row; flex-basis: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-wordmark">
+    <div class="auth-wordmark-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M8.5 7.5C8.5 6 10 5 12 5s3.5 1 3.5 2.5c0 1.8-1.8 2.6-3.5 3.1-1.7.5-3.5 1.3-3.5 3.4C8.5 15.8 10 17 12 17s3.5-1.2 3.5-3"/></svg>
+    </div>
+    <span class="auth-wordmark-text">Who Owes Me</span>
+  </div>
+
+  <div class="auth-card">
+    <h1 class="auth-heading">Welcome back</h1>
+    <p class="auth-sub">Sign in or create an account to continue</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-in"  type="button">Sign In</button>
+      <button class="auth-tab"        id="tab-up"  type="button">Create Account</button>
+    </div>
+
+    <div class="auth-alert" id="auth-alert"></div>
+
+    <div class="auth-field">
+      <label for="a-user">Username</label>
+      <input type="text" id="a-user" placeholder="e.g. sasha" autocomplete="username" spellcheck="false" />
+    </div>
+    <div class="auth-field">
+      <label for="a-pass">Password</label>
+      <input type="password" id="a-pass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <div class="auth-field" id="a-confirm-wrap" style="display:none">
+      <label for="a-confirm">Confirm Password</label>
+      <input type="password" id="a-confirm" placeholder="••••••••" autocomplete="new-password" />
+    </div>
+
+    <button class="auth-btn" id="a-submit" type="button">Sign In</button>
+    <p class="auth-note">All data lives in your browser only.<br>No server. No account recovery.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     APP SCREEN
+════════════════════════════════════════════════ -->
+<div id="app-screen">
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M8.5 7.5C8.5 6 10 5 12 5s3.5 1 3.5 2.5c0 1.8-1.8 2.6-3.5 3.1-1.7.5-3.5 1.3-3.5 3.4C8.5 15.8 10 17 12 17s3.5-1.2 3.5-3"/></svg>
+      </div>
+      <span class="header-title">Who Owes Me</span>
+      <div class="header-right">
+        <!-- User pill -->
+        <div class="user-pill" id="user-pill">
+          <div class="user-pill-avatar" id="user-pill-av"></div>
+          <span class="user-pill-name" id="user-pill-name"></span>
+        </div>
+        <!-- Friends -->
+        <button class="hdr-btn friends-btn" id="btn-friends" type="button">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Friends
+          <span class="notif-dot" id="notif-dot">0</span>
+        </button>
+        <!-- Logout -->
+        <button class="hdr-btn logout-btn" id="btn-logout" type="button">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+          Log out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- Hero summary -->
+    <div class="hero">
+      <div class="hero-stat">
+        <div class="hero-stat-lbl">They Owe Me</div>
+        <div class="hero-stat-val r" id="s-owed">$0.00</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-lbl">I Owe</div>
+        <div class="hero-stat-val b" id="s-iowe">$0.00</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-lbl">Net Balance</div>
+        <div class="hero-stat-val z" id="s-net">$0.00</div>
+      </div>
+    </div>
+
+    <!-- Add debt form -->
+    <div class="form-shell owed" id="form-shell">
+      <div class="form-inner">
+        <div class="form-label">Add a Debt</div>
+
+        <div class="dir-toggle">
+          <button class="dir-opt owed on" id="d-owed" type="button"><span></span>They owe me</button>
+          <button class="dir-opt iowe"    id="d-iowe" type="button"><span></span>I owe them</button>
+        </div>
+
+        <div class="form-row">
+          <div class="fld">
+            <label for="f-name">Person</label>
+            <div class="person-wrap">
+              <input type="text" id="f-name" placeholder="e.g. Alex" autocomplete="off" />
+              <div class="ac-drop" id="ac-drop"></div>
+            </div>
+          </div>
+          <div class="fld">
+            <label for="f-amt">Amount ($)</label>
+            <input type="number" id="f-amt" placeholder="0.00" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <div class="fld fld-reason">
+          <label for="f-why">Reason</label>
+          <input type="text" id="f-why" placeholder="e.g. Dinner at Nobu" autocomplete="off" />
+        </div>
+        <button class="add-btn" id="btn-add" type="button">+ Add Debt</button>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <button class="fil-btn on" data-f="all">All</button>
+      <button class="fil-btn"    data-f="unpaid">Unpaid</button>
+      <button class="fil-btn"    data-f="paid">Paid</button>
+    </div>
+
+    <div id="debt-list"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     FRIENDS PANEL
+════════════════════════════════════════════════ -->
+<div class="overlay" id="overlay"></div>
+<div class="friends-panel" id="fp" role="dialog" aria-label="Friends">
+  <div class="fp-head">
+    <span class="fp-title">Friends</span>
+    <button class="fp-close" id="fp-close" type="button">✕</button>
+  </div>
+  <div class="fp-body">
+    <div class="fp-sec">
+      <div class="fp-sec-ttl">Add a Friend</div>
+      <div class="add-row">
+        <input type="text" id="fp-input" placeholder="Enter their username…" autocomplete="off" spellcheck="false" />
+        <button class="add-row-btn" id="fp-add" type="button">Add</button>
+      </div>
+      <div class="fp-msg" id="fp-msg"></div>
+    </div>
+
+    <div class="fp-sec" id="fp-req-sec">
+      <div class="fp-sec-ttl">Requests</div>
+      <div id="fp-req-list"></div>
+    </div>
+
+    <div class="fp-sec">
+      <div class="fp-sec-ttl">My Friends</div>
+      <div id="fp-friends-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     SHARED VIEW MODAL
+     Only shows debts between you and one friend.
+     Everything else stays private.
+════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Shared with —</div>
+      <div class="privacy-badge">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Private
+      </div>
+      <button class="modal-close" id="modal-close" type="button">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   WHO OWES ME — full app
+   ───────────────────────────────────────────────
+   Privacy model:
+     Each user's full debt list is stored under their
+     own key and is NEVER shown to others.
+     When friend A views their "shared" view with
+     friend B, only debts explicitly linked to B
+     (from A's data) are rendered — nothing else.
+     Likewise when B views from their side.
+═══════════════════════════════════════════════════ */
+
+/* ── Keys ─────────────────────────────────────────── */
+const K_ACCTS  = 'wom-accounts';
+const K_SESS   = 'wom-session';
+const kDebts   = u => `wom-debts-${u.toLowerCase()}`;
+const kFriends = u => `wom-friends-${u.toLowerCase()}`;
+const kReqs    = u => `wom-requests-${u.toLowerCase()}`;
+const kLinks   = u => `wom-links-${u.toLowerCase()}`;
+
+const PALETTE  = [
+  '#e11d48','#ea580c','#ca8a04','#059669',
+  '#0d9488','#2563eb','#7c3aed','#db2777',
+  '#475569','#0891b2'
+];
+
+/* ── State ────────────────────────────────────────── */
+let me            = null;   // logged-in username
+let debts         = [];
+let filter        = 'all';
+let dir           = 'owed_to_me';
+let pendingLink   = null;   // friend username selected from autocomplete
+
+/* ── Crypto ───────────────────────────────────────── */
+async function sha256(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── LocalStorage helpers ─────────────────────────── */
+function ls(k)    { try { return JSON.parse(localStorage.getItem(k)); } catch(_){ return null; } }
+function lsSet(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+function accounts()    { return ls(K_ACCTS)      || []; }
+function session()     { return ls(K_SESS); }
+function findAcct(u)   { return accounts().find(a => a.username.toLowerCase() === u.toLowerCase()); }
+
+function getDebts(u)   { return (ls(kDebts(u))   || []).map(d => ({direction:'owed_to_me',...d})); }
+function getFriends(u) { return ls(kFriends(u))  || []; }
+function getReqs(u)    { return ls(kReqs(u))     || []; }
+function getLinks()    { return ls(kLinks(me))   || {}; }
+function saveLinks(x)  { lsSet(kLinks(me), x); }
+
+function saveDebts()   { lsSet(kDebts(me), debts); }
+
+/* ── Auth ─────────────────────────────────────────── */
+async function register(username, password) {
+  if (username.length < 2)  return err('Username must be at least 2 characters.');
+  if (!/^[a-zA-Z0-9_.\-]+$/.test(username)) return err('Letters, numbers, _ . - only.');
+  if (password.length < 6)  return err('Password must be at least 6 characters.');
+  if (findAcct(username))   return err('Username already taken.');
+  const a = accounts();
+  a.push({ username: username.trim(), passwordHash: await sha256(password) });
+  lsSet(K_ACCTS, a);
+  return ok();
+}
+
+async function login(username, password) {
+  const a = findAcct(username);
+  if (!a) return err('No account with that username.');
+  if (await sha256(password) !== a.passwordHash) return err('Incorrect password.');
+  return ok(a.username);
+}
+
+function err(message) { return { ok: false, message }; }
+function ok(data)     { return { ok: true, data }; }
+
+/* ── Friends ──────────────────────────────────────── */
+function sendReq(target) {
+  target = target.trim();
+  if (!target)                                return err('Enter a username.');
+  if (target.toLowerCase() === me.toLowerCase()) return err("Can't add yourself.");
+  if (!findAcct(target))                      return err(`No account found for "${esc(target)}".`);
+
+  const myFriends = getFriends(me);
+  if (myFriends.map(f=>f.toLowerCase()).includes(target.toLowerCase()))
+    return err('Already friends!');
+
+  // Auto-accept if they already sent us a request
+  const myReqs = getReqs(me);
+  if (myReqs.map(r=>r.toLowerCase()).includes(target.toLowerCase())) {
+    acceptReq(target); return ok(`You and ${esc(target)} are now friends!`);
+  }
+
+  const theirReqs = getReqs(target);
+  if (theirReqs.map(r=>r.toLowerCase()).includes(me.toLowerCase()))
+    return err('Request already sent.');
+
+  theirReqs.push(me); lsSet(kReqs(target), theirReqs);
+  return ok(`Request sent to ${esc(target)}!`);
+}
+
+function acceptReq(from) {
+  const mf = getFriends(me);
+  const tf = getFriends(from);
+  if (!mf.map(f=>f.toLowerCase()).includes(from.toLowerCase())) mf.push(from);
+  if (!tf.map(f=>f.toLowerCase()).includes(me.toLowerCase()))   tf.push(me);
+  lsSet(kFriends(me), mf); lsSet(kFriends(from), tf);
+  lsSet(kReqs(me), getReqs(me).filter(r => r.toLowerCase() !== from.toLowerCase()));
+}
+
+function declineReq(from) {
+  lsSet(kReqs(me), getReqs(me).filter(r => r.toLowerCase() !== from.toLowerCase()));
+}
+
+function removeFriend(f) {
+  lsSet(kFriends(me), getFriends(me).filter(x => x.toLowerCase() !== f.toLowerCase()));
+  // Unlink any person entries linked to this friend
+  const links = getLinks();
+  for (const k of Object.keys(links))
+    if (links[k].toLowerCase() === f.toLowerCase()) delete links[k];
+  saveLinks(links);
+}
+
+/* ── Link management ─────────────────────────────── */
+function linkPerson(key, friendUser)  { const l=getLinks(); l[key]=friendUser; saveLinks(l); }
+function unlinkPerson(key)            { const l=getLinks(); delete l[key]; saveLinks(l); }
+
+/* ── Utilities ────────────────────────────────────── */
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+function nameColor(n) {
+  let h=0; for(let i=0;i<n.length;i++) h=(n.charCodeAt(i)+((h<<5)-h))|0;
+  return PALETTE[Math.abs(h)%PALETTE.length];
+}
+
+function initials(n) {
+  return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+
+function fmt(n)     { return '$'+parseFloat(n).toFixed(2); }
+function fmtDate(s) { return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function esc(s)     { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+function groupBy(entries) {
+  const m = new Map();
+  for (const d of entries) {
+    const k = d.person.trim().toLowerCase();
+    if (!m.has(k)) m.set(k, { displayName: d.person.trim(), debts: [] });
+    m.get(k).debts.push(d);
+  }
+  return m;
+}
+
+function sortGroups(m) {
+  return [...m.values()].map(g => {
+    const unpaid = g.debts.filter(d=>!d.paid).reduce((s,d)=>s+d.amount,0);
+    const total  = g.debts.reduce((s,d)=>s+d.amount,0);
+    return {...g, unpaid, total};
+  }).sort((a,b) => b.unpaid-a.unpaid || b.total-a.total);
+}
+
+/* ══════════════════════════════════════════════════
+   AUTH UI
+══════════════════════════════════════════════════ */
+let authMode = 'in';
+
+const authScreen  = document.getElementById('auth-screen');
+const appScreen   = document.getElementById('app-screen');
+const tabIn       = document.getElementById('tab-in');
+const tabUp       = document.getElementById('tab-up');
+const aUser       = document.getElementById('a-user');
+const aPass       = document.getElementById('a-pass');
+const aConfirm    = document.getElementById('a-confirm');
+const aConfirmWrap= document.getElementById('a-confirm-wrap');
+const aAlert      = document.getElementById('auth-alert');
+const aSubmit     = document.getElementById('a-submit');
+
+function setAuthMode(m) {
+  authMode = m;
+  aAlert.classList.remove('show'); aAlert.textContent='';
+  [aUser,aPass,aConfirm].forEach(e=>e.classList.remove('err'));
+  if (m==='in') {
+    tabIn.classList.add('active'); tabUp.classList.remove('active');
+    aConfirmWrap.style.display='none'; aSubmit.textContent='Sign In';
+  } else {
+    tabUp.classList.add('active'); tabIn.classList.remove('active');
+    aConfirmWrap.style.display='flex'; aSubmit.textContent='Create Account';
+  }
+}
+
+tabIn.addEventListener('click', ()=>setAuthMode('in'));
+tabUp.addEventListener('click', ()=>setAuthMode('up'));
+
+[aUser,aPass,aConfirm].forEach(el=>{
+  el.addEventListener('input', ()=>{ el.classList.remove('err'); aAlert.classList.remove('show'); });
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter') doAuth(); });
+});
+
+aSubmit.addEventListener('click', doAuth);
+
+async function doAuth() {
+  [aUser,aPass,aConfirm].forEach(e=>e.classList.remove('err'));
+  aAlert.classList.remove('show');
+
+  const user = aUser.value.trim();
+  const pass = aPass.value;
+  const conf = aConfirm.value;
+
+  if (!user) { aUser.classList.add('err'); showAuthErr('Username required.'); return; }
+  if (!pass) { aPass.classList.add('err'); showAuthErr('Password required.'); return; }
+
+  aSubmit.disabled=true;
+  aSubmit.textContent = authMode==='in' ? 'Signing in…' : 'Creating account…';
+
+  if (authMode==='up') {
+    if (pass!==conf) {
+      aPass.classList.add('err'); aConfirm.classList.add('err');
+      showAuthErr("Passwords don't match.");
+      resetSubmit(); return;
+    }
+    const r = await register(user, pass);
+    if (!r.ok) { showAuthErr(r.message); resetSubmit(); return; }
+  }
+
+  const r = await login(user, pass);
+  if (!r.ok) { aPass.classList.add('err'); showAuthErr(r.message); resetSubmit(); return; }
+
+  startSession(r.data);
+}
+
+function showAuthErr(msg) { aAlert.textContent=msg; aAlert.classList.add('show'); }
+
+function resetSubmit() {
+  aSubmit.disabled=false;
+  aSubmit.textContent = authMode==='in' ? 'Sign In' : 'Create Account';
+}
+
+/* ══════════════════════════════════════════════════
+   SESSION
+══════════════════════════════════════════════════ */
+function startSession(username) {
+  me = username;
+  debts = getDebts(username);
+  lsSet(K_SESS, {username});
+
+  // Update header pill
+  const color = nameColor(username);
+  const av = document.getElementById('user-pill-av');
+  av.style.background = color;
+  av.textContent = initials(username);
+  document.getElementById('user-pill-name').textContent = username;
+
+  authScreen.style.display = 'none';
+  appScreen.style.display  = 'block';
+  aUser.value=''; aPass.value=''; aConfirm.value='';
+  aSubmit.disabled=false; aAlert.classList.remove('show');
+
+  updateBadge();
+  render();
+}
+
+function endSession() {
+  me=null; debts=[];
+  lsSet(K_SESS, null);
+  filter='all'; dir='owed_to_me'; pendingLink=null;
+  document.querySelectorAll('.fil-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelector('[data-f="all"]').classList.add('on');
+  document.getElementById('d-owed').classList.add('on');
+  document.getElementById('d-iowe').classList.remove('on');
+  document.getElementById('form-shell').className='form-shell owed';
+  closeFP(); closeModal();
+  appScreen.style.display='none';
+  authScreen.style.display='flex';
+  setTimeout(()=>aUser.focus(), 50);
+}
+
+document.getElementById('btn-logout').addEventListener('click', endSession);
+
+/* ══════════════════════════════════════════════════
+   FRIENDS PANEL
+══════════════════════════════════════════════════ */
+const fpEl     = document.getElementById('fp');
+const overlay  = document.getElementById('overlay');
+
+function openFP()  { renderFP(); fpEl.classList.add('on'); overlay.classList.add('on'); setTimeout(()=>document.getElementById('fp-input').focus(),100); }
+function closeFP() { fpEl.classList.remove('on'); overlay.classList.remove('on'); }
+
+document.getElementById('btn-friends').addEventListener('click', openFP);
+document.getElementById('fp-close').addEventListener('click', closeFP);
+overlay.addEventListener('click', closeFP);
+
+function updateBadge() {
+  if (!me) return;
+  const n = getReqs(me).length;
+  const dot = document.getElementById('notif-dot');
+  dot.textContent = n; n>0 ? dot.classList.add('on') : dot.classList.remove('on');
+}
+
+function renderFP() {
+  const msg    = document.getElementById('fp-msg');
+  msg.className='fp-msg';
+  const reqs   = getReqs(me);
+  const friends= getFriends(me);
+
+  // Requests
+  const reqSec  = document.getElementById('fp-req-sec');
+  const reqList = document.getElementById('fp-req-list');
+  if (reqs.length===0) {
+    reqSec.style.display='none';
+  } else {
+    reqSec.style.display='block';
+    reqList.innerHTML = reqs.map(f=>`
+      <div class="f-row">
+        <div class="av av-sm" style="background:${nameColor(f)}">${esc(initials(f))}</div>
+        <div class="f-row-name">${esc(f)}</div>
+        <div class="f-row-acts">
+          <button class="f-btn accept"  data-accept="${esc(f)}"  type="button">Accept</button>
+          <button class="f-btn decline" data-decline="${esc(f)}" type="button">Decline</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Friends list
+  const fl = document.getElementById('fp-friends-list');
+  if (friends.length===0) {
+    fl.innerHTML='<div class="fp-empty">No friends yet.</div>';
+  } else {
+    fl.innerHTML = friends.map(f=>`
+      <div class="f-row">
+        <div class="av av-sm" style="background:${nameColor(f)}">${esc(initials(f))}</div>
+        <div class="f-row-name">${esc(f)}</div>
+        <div class="f-row-acts">
+          <button class="f-btn view"   data-view="${esc(f)}"   type="button">View shared</button>
+          <button class="f-btn remove" data-remove="${esc(f)}" type="button">Remove</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// Send request
+document.getElementById('fp-add').addEventListener('click', ()=>{
+  const input = document.getElementById('fp-input');
+  const msg   = document.getElementById('fp-msg');
+  msg.className='fp-msg'; input.classList.remove('err');
+  const r = sendReq(input.value);
+  if (r.ok) {
+    msg.textContent=r.data; msg.classList.add('ok'); input.value='';
+  } else {
+    msg.textContent=r.message; msg.classList.add('err'); input.classList.add('err');
+  }
+  renderFP(); updateBadge(); renderList();
+});
+
+document.getElementById('fp-input').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('fp-add').click();
+});
+
+// Delegate panel actions
+fpEl.addEventListener('click', e=>{
+  const ac = e.target.closest('[data-accept]');
+  const dc = e.target.closest('[data-decline]');
+  const rm = e.target.closest('[data-remove]');
+  const vw = e.target.closest('[data-view]');
+
+  if (ac) { acceptReq(ac.dataset.accept); renderFP(); updateBadge(); renderList(); }
+  if (dc) { declineReq(dc.dataset.decline); renderFP(); updateBadge(); }
+  if (rm) { removeFriend(rm.dataset.remove); renderFP(); renderList(); }
+  if (vw) { closeFP(); openSharedView(vw.dataset.view); }
+});
+
+/* ══════════════════════════════════════════════════
+   SHARED VIEW MODAL
+   Shows ONLY debts between me and one friend.
+   All other debts are completely hidden.
+══════════════════════════════════════════════════ */
+const modalOverlay = document.getElementById('modal-overlay');
+const modal        = document.getElementById('modal');
+
+function openSharedView(friendUsername) {
+  document.getElementById('modal-title').textContent = `You & ${friendUsername}`;
+  document.getElementById('modal-body').innerHTML = buildSharedView(friendUsername);
+  modalOverlay.classList.add('on');
+}
+
+function closeModal() { modalOverlay.classList.remove('on'); }
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+/**
+ * Build the HTML for the shared view.
+ * Rules:
+ *  1. From MY debts: only show entries where links[personKey] === friendUsername
+ *  2. From THEIR debts: only show entries where links[personKey] === me (my username)
+ *  3. Everything else on both accounts is hidden.
+ */
+function buildSharedView(friendUsername) {
+  const links       = getLinks();
+  const friendLinks = ls(kLinks(friendUsername)) || {};
+
+  // My debts involving this friend
+  const myShared = debts.filter(d => {
+    const k = d.person.trim().toLowerCase();
+    return links[k] && links[k].toLowerCase() === friendUsername.toLowerCase();
+  });
+
+  // Their debts involving me (from their storage)
+  const theirDebts  = getDebts(friendUsername);
+  const theirShared = theirDebts.filter(d => {
+    const k = d.person.trim().toLowerCase();
+    return friendLinks[k] && friendLinks[k].toLowerCase() === me.toLowerCase();
+  });
+
+  if (myShared.length === 0 && theirShared.length === 0) {
+    return `
+      <div class="modal-empty">
+        <div class="modal-empty-icon">🔗</div>
+        <strong>No linked transactions yet.</strong><br>
+        Add a debt and link it to this friend to see it here.
+      </div>`;
+  }
+
+  // Net: from my PoV, what do we owe each other?
+  const iAmOwed  = myShared.filter(d => !d.paid && d.direction==='owed_to_me').reduce((s,d)=>s+d.amount,0);
+  const iOweThem = myShared.filter(d => !d.paid && d.direction==='i_owe').reduce((s,d)=>s+d.amount,0)
+                 + theirShared.filter(d => !d.paid && d.direction==='owed_to_me').reduce((s,d)=>s+d.amount,0);
+  const net      = iAmOwed - iOweThem;
+
+  let html = '';
+
+  // Net balance pill
+  const netColor = net>0 ? 'gp' : net<0 ? 'rn' : 'z';
+  const netLabel = net>0 ? `${esc(friendUsername)} owes you` : net<0 ? `You owe ${esc(friendUsername)}` : 'All settled';
+  html += `
+    <div class="shared-balance">
+      <div class="sb-label">${netLabel}</div>
+      <div class="sb-val ${netColor}">${net===0 ? '—' : (net<0?'':'+') + fmt(Math.abs(net))}</div>
+    </div>`;
+
+  // My entries linked to this friend
+  if (myShared.length > 0) {
+    html += `<div class="shared-sec-ttl">From your records</div>`;
+    html += myShared.map(d => renderDebtCardReadonly(d)).join('');
+  }
+
+  // Their entries linked to me
+  if (theirShared.length > 0) {
+    html += `<div class="shared-sec-ttl">From ${esc(friendUsername)}'s records</div>`;
+    html += theirShared.map(d => renderDebtCardReadonly(d, true)).join('');
+  }
+
+  return html;
+}
+
+/** Read-only debt card (no action buttons) used inside the shared modal */
+function renderDebtCardReadonly(debt, invert=false) {
+  // invert = true means the debt is from the friend's perspective, flip colors
+  const isOwed  = debt.direction === 'owed_to_me';
+  const color   = invert ? (isOwed ? 'b' : 'r') : (isOwed ? 'r' : 'b');
+  return `
+    <div class="debt-card ${debt.paid?'settled':''}">
+      <div class="debt-body">
+        <div class="debt-reason">${esc(debt.reason)}</div>
+        <div class="debt-meta">${fmtDate(debt.date)}${debt.paid ? ' · Settled' : ''}</div>
+      </div>
+      <div class="debt-amt ${color}">${fmt(debt.amount)}</div>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   AUTOCOMPLETE
+══════════════════════════════════════════════════ */
+const fName  = document.getElementById('f-name');
+const acDrop = document.getElementById('ac-drop');
+
+function showAC(q) {
+  const friends = getFriends(me);
+  const matches = friends.filter(f => f.toLowerCase().includes(q.toLowerCase()) && q.length>0);
+  if (!matches.length) { hideAC(); return; }
+  acDrop.innerHTML = matches.map(f=>`
+    <div class="ac-item" data-pick="${esc(f)}">
+      <div class="ac-avatar" style="background:${nameColor(f)}">${esc(initials(f))}</div>
+      <div class="ac-name">${esc(f)}</div>
+      <div class="ac-tag">friend</div>
+    </div>`).join('');
+  acDrop.classList.add('open');
+}
+
+function hideAC() { acDrop.classList.remove('open'); acDrop.innerHTML=''; }
+
+fName.addEventListener('input', ()=>{ fName.classList.remove('err'); pendingLink=null; showAC(fName.value.trim()); });
+fName.addEventListener('blur',  ()=>setTimeout(hideAC, 150));
+
+acDrop.addEventListener('mousedown', e=>{
+  const item = e.target.closest('[data-pick]');
+  if (!item) return;
+  fName.value = item.dataset.pick;
+  pendingLink = item.dataset.pick;
+  hideAC();
+  document.getElementById('f-amt').focus();
+});
+
+/* ══════════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════════ */
+function render() { renderSummary(); renderList(); }
+
+function renderSummary() {
+  const owed = debts.filter(d=>!d.paid&&d.direction==='owed_to_me').reduce((s,d)=>s+d.amount,0);
+  const iowe = debts.filter(d=>!d.paid&&d.direction==='i_owe').reduce((s,d)=>s+d.amount,0);
+  const net  = owed - iowe;
+  document.getElementById('s-owed').textContent = fmt(owed);
+  document.getElementById('s-iowe').textContent = fmt(iowe);
+  const el = document.getElementById('s-net');
+  el.textContent = (net>=0?'+':'')+fmt(net);
+  el.className   = 'hero-stat-val ' + (net>0?'gp':net<0?'rn':'z');
+}
+
+function renderList() {
+  const list = document.getElementById('debt-list');
+
+  const visible = debts.filter(d => {
+    if (filter==='paid')   return d.paid;
+    if (filter==='unpaid') return !d.paid;
+    return true;
+  });
+
+  const owed = visible.filter(d=>d.direction==='owed_to_me');
+  const iowe = visible.filter(d=>d.direction==='i_owe');
+
+  if (!owed.length && !iowe.length) { list.innerHTML=emptyState(); return; }
+
+  let html='';
+
+  // They owe me
+  const owedGrps   = sortGroups(groupBy(owed));
+  const owedUnpaid = owed.filter(d=>!d.paid).reduce((s,d)=>s+d.amount,0);
+  html += `
+    <div class="sec-head">
+      <div class="sec-pip r"></div>
+      <div class="sec-ttl">They Owe Me</div>
+      <div class="sec-sum ${owedUnpaid>0?'r':'m'}">${fmt(owedUnpaid)}</div>
+    </div>`;
+  html += owedGrps.length ? owedGrps.map(g=>renderGroup(g,'owed_to_me')).join('') : '<div class="sec-empty">Nothing here.</div>';
+
+  // I owe
+  const ioweGrps   = sortGroups(groupBy(iowe));
+  const ioweUnpaid = iowe.filter(d=>!d.paid).reduce((s,d)=>s+d.amount,0);
+  html += `
+    <div class="sec-head" style="margin-top:28px">
+      <div class="sec-pip b"></div>
+      <div class="sec-ttl">I Owe</div>
+      <div class="sec-sum ${ioweUnpaid>0?'b':'m'}">${fmt(ioweUnpaid)}</div>
+    </div>`;
+  html += ioweGrps.length ? ioweGrps.map(g=>renderGroup(g,'i_owe')).join('') : '<div class="sec-empty">Nothing here.</div>';
+
+  list.innerHTML = html;
+}
+
+function emptyState() {
+  const c = {
+    all:    {icon:'🎉', ttl:'All clear!',        desc:'No debts yet. Add one above.'},
+    unpaid: {icon:'✅', ttl:'Nothing unpaid!',   desc:'All settled.'},
+    paid:   {icon:'📭', ttl:'No paid debts yet', desc:'Settled debts appear here.'}
+  }[filter];
+  return `<div class="empty"><div class="empty-icon">${c.icon}</div><div class="empty-ttl">${c.ttl}</div><div class="empty-desc">${c.desc}</div></div>`;
+}
+
+function renderGroup(group, direction) {
+  const {displayName, debts: gd, unpaid, total} = group;
+  const color    = nameColor(displayName);
+  const settled  = unpaid===0;
+  const amtCls   = direction==='owed_to_me' ? 'r' : 'b';
+  const totalLbl = settled ? fmt(total)+' settled' : fmt(unpaid)+' unpaid';
+  const totalCls = settled ? 'g' : amtCls;
+  const cnt      = gd.length;
+
+  const links    = getLinks();
+  const pKey     = displayName.trim().toLowerCase();
+  const linked   = links[pKey] || null;
+  const friends  = getFriends(me);
+
+  // Build link chip or button
+  let linkHtml = '';
+  if (linked) {
+    linkHtml = `
+      <span class="link-chip">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:9px;height:9px">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        ${esc(linked)}
+        <button class="btn-unlink" data-unlink="${esc(pKey)}" type="button" title="Unlink">✕</button>
+      </span>`;
+  } else if (friends.length > 0) {
+    linkHtml = `<button class="btn-link" data-open-picker="${esc(pKey)}" type="button">+ link friend</button>`;
+  }
+
+  // Link picker (hidden)
+  const pickerItems = friends.map(f=>`
+    <div class="lp-item" data-pick-f="${esc(f)}" data-pick-p="${esc(pKey)}">
+      <div class="av av-xs" style="background:${nameColor(f)}">${esc(initials(f))}</div>
+      ${esc(f)}
+    </div>`).join('') || '<div class="lp-empty">No friends to link.</div>';
+
+  const pickerHtml = linked ? '' : `
+    <div class="link-picker" id="lp-${esc(pKey)}">${pickerItems}</div>`;
+
+  const avClass = `av av-lg${linked?' av-linked':''}`;
+
+  return `
+    <div class="person-group">
+      <div class="person-row">
+        <div class="${avClass}" style="background:${color}">${esc(initials(displayName))}</div>
+        <div class="person-meta">
+          <div class="person-name-row">
+            <span class="person-name">${esc(displayName)}</span>
+            ${linkHtml}
+          </div>
+          <div class="person-sub">${cnt} debt${cnt!==1?'s':''}</div>
+        </div>
+        <div class="person-total ${totalCls}">${totalLbl}</div>
+      </div>
+      ${pickerHtml}
+      ${gd.map(d=>renderCard(d, direction)).join('')}
+    </div>`;
+}
+
+function renderCard(debt, direction) {
+  const amtCls  = direction==='owed_to_me' ? 'r' : 'b';
+  const action  = debt.paid
+    ? `<button class="act-btn undo" data-act="undo"   data-id="${debt.id}">Undo</button>`
+    : `<button class="act-btn pay"  data-act="pay"    data-id="${debt.id}">Mark Paid</button>`;
+  return `
+    <div class="debt-card ${debt.paid?'settled':''}">
+      <div class="debt-body">
+        <div class="debt-reason">${esc(debt.reason)}</div>
+        <div class="debt-meta">${fmtDate(debt.date)}</div>
+      </div>
+      <div class="debt-amt ${amtCls}">${fmt(debt.amount)}</div>
+      <div class="debt-acts">
+        ${action}
+        <button class="act-btn del" data-act="del" data-id="${debt.id}">Delete</button>
+      </div>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   DEBT ACTIONS
+══════════════════════════════════════════════════ */
+function addDebt(person, amount, reason, direction, link) {
+  debts.push({ id:uid(), person:person.trim(), amount:parseFloat(amount),
+               reason:reason.trim(), direction, paid:false, date:new Date().toISOString() });
+  if (link) linkPerson(person.trim().toLowerCase(), link);
+  saveDebts(); render();
+}
+
+function setPaid(id, paid) {
+  const d=debts.find(d=>d.id===id); if(d){ d.paid=paid; saveDebts(); render(); }
+}
+
+function delDebt(id) { debts=debts.filter(d=>d.id!==id); saveDebts(); render(); }
+
+/* ── Form ─────────────────────────────────────────── */
+const fAmt   = document.getElementById('f-amt');
+const fWhy   = document.getElementById('f-why');
+const fShell = document.getElementById('form-shell');
+
+function doAddDebt() {
+  [fName,fAmt,fWhy].forEach(e=>e.classList.remove('err'));
+  let ok=true;
+  if (!fName.value.trim())                              { fName.classList.add('err'); ok=false; }
+  if (!fAmt.value||parseFloat(fAmt.value)<=0)          { fAmt.classList.add('err');  ok=false; }
+  if (!fWhy.value.trim())                               { fWhy.classList.add('err');  ok=false; }
+  if (!ok) return;
+  addDebt(fName.value, fAmt.value, fWhy.value, dir, pendingLink);
+  fName.value=''; fAmt.value=''; fWhy.value=''; pendingLink=null; hideAC(); fName.focus();
+}
+
+document.getElementById('d-owed').addEventListener('click', ()=>{
+  dir='owed_to_me';
+  document.getElementById('d-owed').classList.add('on');
+  document.getElementById('d-iowe').classList.remove('on');
+  fShell.className='form-shell owed';
+});
+
+document.getElementById('d-iowe').addEventListener('click', ()=>{
+  dir='i_owe';
+  document.getElementById('d-iowe').classList.add('on');
+  document.getElementById('d-owed').classList.remove('on');
+  fShell.className='form-shell iowe';
+});
+
+document.getElementById('btn-add').addEventListener('click', doAddDebt);
+[fName,fAmt,fWhy].forEach(el=>{
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter') doAddDebt(); });
+});
+[fAmt,fWhy].forEach(el=>el.addEventListener('input', ()=>el.classList.remove('err')));
+
+/* ── Filters ──────────────────────────────────────── */
+document.querySelectorAll('.fil-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.fil-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on'); filter=btn.dataset.f; renderList();
+  });
+});
+
+/* ── List delegation ─────────────────────────────── */
+document.getElementById('debt-list').addEventListener('click', e=>{
+  const act  = e.target.closest('[data-act]');
+  const opp  = e.target.closest('[data-open-picker]');
+  const pick = e.target.closest('[data-pick-f]');
+  const unl  = e.target.closest('[data-unlink]');
+
+  if (act) {
+    const {act: a, id} = act.dataset;
+    if      (a==='pay')  setPaid(id, true);
+    else if (a==='undo') setPaid(id, false);
+    else if (a==='del')  delDebt(id);
+  } else if (opp) {
+    const lp = document.getElementById('lp-'+opp.dataset.openPicker);
+    if (lp) lp.classList.toggle('open');
+  } else if (pick) {
+    linkPerson(pick.dataset.pickP, pick.dataset.pickF); renderList();
+  } else if (unl) {
+    unlinkPerson(unl.dataset.unlink); renderList();
+  }
+});
+
+/* ── Init ─────────────────────────────────────────── */
+(function init() {
+  const s = session();
+  if (s && s.username && findAcct(s.username)) {
+    startSession(s.username);
+  } else {
+    appScreen.style.display='none';
+    authScreen.style.display='flex';
+    setTimeout(()=>aUser.focus(), 50);
+  }
+})();
+</script>
+</body>
+</html>
