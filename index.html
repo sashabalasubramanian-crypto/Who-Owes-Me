@@ -209,41 +209,44 @@
 
     .header-right { display: flex; align-items: center; gap: 8px; }
 
-    .user-pill {
+    /* ── Nav menu (top-left dropdown) ────────────────── */
+    .nav-menu {
+      position: relative; flex-shrink: 0;
+    }
+
+    .nav-trigger {
       display: flex; align-items: center; gap: 7px;
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: 99px; padding: 5px 10px 5px 6px;
-      cursor: pointer; position: relative;
+      cursor: pointer; user-select: none;
       transition: border-color .15s, background .15s;
-      user-select: none;
     }
 
-    .user-pill:hover { border-color: var(--border-mid); background: #f0efee; }
-    .user-pill.open  { border-color: var(--border-mid); background: #f0efee; }
-
-    /* Tiny chevron */
-    .user-pill-chevron {
-      width: 12px; height: 12px; flex-shrink: 0; color: var(--text-muted);
-      transition: transform .2s;
+    .nav-trigger:hover, .nav-trigger.open {
+      border-color: var(--border-mid); background: #f0efee;
     }
 
-    .user-pill.open .user-pill-chevron { transform: rotate(180deg); }
-
-    .user-pill-avatar {
+    .nav-trigger-av {
       width: 22px; height: 22px; border-radius: 50%;
       font-size: 9px; font-weight: 800; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
 
-    .user-pill-name {
+    .nav-trigger-name {
       font-size: 13px; font-weight: 600; color: var(--text-mid);
       max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    /* ── Profile dropdown ─────────────────────────── */
-    .profile-drop {
-      position: absolute; top: calc(100% + 10px); right: 0;
+    .nav-trigger-chevron {
+      width: 12px; height: 12px; flex-shrink: 0; color: var(--text-muted);
+      transition: transform .2s;
+    }
+
+    .nav-trigger.open .nav-trigger-chevron { transform: rotate(180deg); }
+
+    /* The dropdown panel */
+    .nav-drop {
+      position: absolute; top: calc(100% + 10px); left: 0;
       width: 300px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r); box-shadow: var(--sh-lg);
@@ -252,7 +255,53 @@
       transition: opacity .18s, transform .18s;
     }
 
-    .profile-drop.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .nav-drop.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+    /* Reuse pd-* styles for account form section, just inside nav-drop */
+
+    /* Nav dropdown: action rows */
+    .nd-items { padding: 6px 0; }
+
+    .nd-item {
+      display: flex; align-items: center; gap: 11px;
+      width: 100%; padding: 10px 16px;
+      font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text-mid);
+      background: transparent; border: none; cursor: pointer; text-align: left;
+      transition: background .12s, color .12s;
+    }
+
+    .nd-item:hover { background: var(--bg); color: var(--text); }
+
+    .nd-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-muted); }
+
+    .nd-item-badge {
+      margin-left: auto;
+      min-width: 18px; height: 18px; background: var(--red); color: #fff;
+      font-size: 10px; font-weight: 800; border-radius: 99px; padding: 0 4px;
+      display: none; align-items: center; justify-content: center; line-height: 1;
+    }
+
+    .nd-item-badge.on { display: flex; }
+
+    .nd-item-chevron {
+      width: 13px; height: 13px; margin-left: auto; color: var(--text-muted);
+      transition: transform .2s;
+    }
+
+    .nd-item.open .nd-item-chevron { transform: rotate(180deg); }
+
+    .nd-item.logout { color: var(--red); }
+    .nd-item.logout svg { color: var(--red); }
+    .nd-item.logout:hover { background: var(--red-soft); color: var(--red); }
+
+    .nd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* Account settings collapsible section inside nav-drop */
+    .nd-account-body {
+      display: none; border-top: 1px solid var(--border);
+    }
+
+    .nd-account-body.open { display: block; }
 
     .pd-header {
       display: flex; align-items: center; gap: 11px;
@@ -417,21 +466,8 @@
 
     .invite-btn-dismiss:hover { color: var(--text); border-color: var(--border-mid); }
 
-    .hdr-btn {
-      font-size: 12px; font-weight: 600; color: var(--text-muted);
-      background: transparent; border: 1.5px solid var(--border);
-      border-radius: 99px; padding: 6px 13px; cursor: pointer;
-      display: flex; align-items: center; gap: 5px; white-space: nowrap;
-      transition: color .15s, border-color .15s, background .15s;
-      position: relative;
-    }
-
-    .hdr-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-
-    .hdr-btn:hover  { color: var(--text); border-color: var(--border-mid); background: var(--bg); }
-
-    .hdr-btn.friends-btn:hover { color: var(--purple); border-color: var(--purple-border); background: var(--purple-soft); }
-    .hdr-btn.logout-btn:hover  { color: var(--red);    border-color: var(--red-border);    background: var(--red-soft); }
+    /* notif-dot on nav trigger (visible on trigger button) */
+    .nav-trigger { position: relative; }
 
     .notif-dot {
       position: absolute; top: -4px; right: -4px;
@@ -857,6 +893,32 @@
     .add-row-btn:hover  { background: #6d28d9; }
     .add-row-btn:active { transform: scale(.96); }
 
+    /* Suggestions dropdown in the friends panel */
+    .fp-suggestions {
+      margin-top: 6px; border-radius: var(--r-sm);
+      border: 1.5px solid var(--border); background: var(--surface);
+      box-shadow: var(--sh-md); overflow: hidden; display: none;
+    }
+
+    .fp-suggestions.open { display: block; }
+
+    .fp-sug-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; cursor: pointer; font-size: 13px;
+      transition: background .1s;
+    }
+
+    .fp-sug-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .fp-sug-item:hover { background: var(--bg); }
+
+    .fp-sug-name { font-weight: 600; flex: 1; }
+
+    .fp-sug-tag {
+      font-size: 11px; font-weight: 600; color: var(--purple);
+      background: var(--purple-soft); border: 1px solid var(--purple-border);
+      border-radius: 99px; padding: 2px 7px; white-space: nowrap;
+    }
+
     .fp-msg {
       font-size: 12px; margin-top: 8px; border-radius: var(--r-xs);
       padding: 7px 10px; display: none;
@@ -890,6 +952,129 @@
     .f-btn.view:hover { background: var(--purple-border); }
 
     .fp-empty { font-size: 13px; color: var(--text-muted); font-style: italic; padding: 4px 0 8px; }
+
+    /* ═══════════════════════════════════════════════
+       HISTORY PANEL
+    ═══════════════════════════════════════════════ */
+    .history-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 100vw;
+      background: var(--surface); border-left: 1px solid var(--border);
+      box-shadow: var(--sh-lg); z-index: 210;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .25s cubic-bezier(.32,.72,0,1);
+    }
+
+    .history-panel.on { transform: translateX(0); }
+
+    .hp-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 20px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+
+    .hp-title { font-size: 16px; font-weight: 800; letter-spacing: -.3px; flex: 1; }
+
+    .hp-close {
+      width: 32px; height: 32px; background: var(--bg); color: var(--text-muted);
+      border: 1.5px solid var(--border); border-radius: 99px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px; line-height: 1;
+      transition: color .15s, border-color .15s;
+    }
+
+    .hp-close:hover { color: var(--text); border-color: var(--border-mid); }
+
+    .hp-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+    .hp-summary {
+      display: flex; gap: 10px; margin-bottom: 20px;
+    }
+
+    .hp-stat {
+      flex: 1; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 12px 14px; text-align: center;
+    }
+
+    .hp-stat-lbl {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); margin-bottom: 5px;
+    }
+
+    .hp-stat-val { font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+    .hp-stat-val.r { color: var(--red); }
+    .hp-stat-val.b { color: var(--blue); }
+    .hp-stat-val.g { color: var(--green); }
+
+    .hp-filter-row {
+      display: flex; gap: 6px; margin-bottom: 18px;
+    }
+
+    .hp-fil {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 99px; padding: 5px 13px; cursor: pointer;
+      transition: all .15s;
+    }
+
+    .hp-fil:hover { border-color: var(--border-mid); color: var(--text); }
+    .hp-fil.on    { background: var(--text); border-color: var(--text); color: #fff; }
+
+    .hp-month {
+      font-size: 10px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--text-muted);
+      margin: 0 0 10px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hp-month + .hp-month { margin-top: 22px; }
+
+    .hp-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hp-card:last-child { border-bottom: none; }
+
+    .hp-card-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      font-size: 11px; font-weight: 800; color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .hp-card-info { flex: 1; min-width: 0; }
+
+    .hp-card-person {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .hp-card-reason {
+      font-size: 12px; color: var(--text-muted); margin-top: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .hp-card-right { text-align: right; flex-shrink: 0; }
+
+    .hp-card-amt { font-size: 14px; font-weight: 800; letter-spacing: -.3px; }
+    .hp-card-amt.r { color: var(--red); }
+    .hp-card-amt.b { color: var(--blue); }
+
+    .hp-card-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .hp-card-dir {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .05em; margin-top: 3px;
+      color: var(--text-muted);
+    }
+
+    .hp-empty {
+      text-align: center; padding: 48px 0;
+    }
+
+    .hp-empty-icon { font-size: 36px; margin-bottom: 12px; }
+    .hp-empty-ttl  { font-size: 15px; font-weight: 700; letter-spacing: -.2px; margin-bottom: 6px; }
+    .hp-empty-desc { font-size: 13px; color: var(--text-muted); }
 
     /* ═══════════════════════════════════════════════
        SHARED VIEW MODAL
@@ -978,7 +1163,7 @@
       .hero > .hero-divider:last-of-type { display: none; }
       .form-row { grid-template-columns: 1fr; }
       .hero-stat-val { font-size: 22px; }
-      .user-pill-name { display: none; }
+      .nav-trigger-name { display: none; }
       .friends-panel { width: 100vw; }
       .wrap { padding: 20px 14px 80px; }
     }
@@ -1038,104 +1223,137 @@
 
   <header class="header">
     <div class="header-inner">
+
+      <!-- Nav menu trigger (top-left) -->
+      <div class="nav-menu" id="nav-menu">
+        <button class="nav-trigger" id="nav-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+          <div class="nav-trigger-av" id="nav-trigger-av"></div>
+          <span class="nav-trigger-name" id="nav-trigger-name"></span>
+          <svg class="nav-trigger-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+          <span class="notif-dot" id="notif-dot">0</span>
+        </button>
+
+        <!-- Nav dropdown -->
+        <div class="nav-drop" id="nav-drop">
+          <!-- User header -->
+          <div class="pd-header">
+            <div class="pd-av" id="pd-av"></div>
+            <div>
+              <div class="pd-username" id="pd-username-display"></div>
+              <div class="pd-sub">Account settings</div>
+            </div>
+          </div>
+
+          <!-- Menu items -->
+          <div class="nd-items">
+
+            <!-- Account Settings toggle -->
+            <button class="nd-item" id="nd-account-toggle" type="button">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
+              </svg>
+              Account Settings
+              <svg class="nd-item-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+
+            <!-- Collapsible account settings body -->
+            <div class="nd-account-body" id="nd-account-body">
+              <div class="pd-body">
+                <!-- Invite / Share link -->
+                <div class="pd-sec-ttl">Your Invite Link</div>
+                <div class="pd-invite-url">
+                  <span id="pd-invite-url-text">—</span>
+                  <button class="pd-copy-btn" id="pd-copy-btn" type="button">Copy</button>
+                </div>
+                <button class="pd-qr-toggle" id="pd-qr-toggle" type="button">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/>
+                  </svg>
+                  <span id="pd-qr-label">Show QR code</span>
+                </button>
+                <div class="pd-qr-box" id="pd-qr-box">
+                  <div class="pd-qr-frame"><img id="pd-qr-img" src="" alt="QR code" /></div>
+                  <div class="pd-qr-hint">Friends scan this to add you instantly</div>
+                </div>
+                <div class="pd-divider"></div>
+                <div class="pd-sec-ttl">Change Username</div>
+                <div class="pd-field">
+                  <label for="pd-new-user">New username</label>
+                  <input type="text" id="pd-new-user" placeholder="Enter new username" autocomplete="off" spellcheck="false" />
+                </div>
+                <div class="pd-field">
+                  <label for="pd-user-pass">Current password</label>
+                  <input type="password" id="pd-user-pass" placeholder="Confirm with password" autocomplete="current-password" />
+                </div>
+                <button class="pd-save" id="pd-save-user" type="button">Save Username</button>
+                <div class="pd-msg" id="pd-user-msg"></div>
+                <div class="pd-divider"></div>
+                <div class="pd-sec-ttl">Change Password</div>
+                <div class="pd-field">
+                  <label for="pd-cur-pass">Current password</label>
+                  <input type="password" id="pd-cur-pass" placeholder="••••••••" autocomplete="current-password" />
+                </div>
+                <div class="pd-field">
+                  <label for="pd-new-pass">New password</label>
+                  <input type="password" id="pd-new-pass" placeholder="••••••••" autocomplete="new-password" />
+                </div>
+                <div class="pd-field">
+                  <label for="pd-conf-pass">Confirm new password</label>
+                  <input type="password" id="pd-conf-pass" placeholder="••••••••" autocomplete="new-password" />
+                </div>
+                <button class="pd-save" id="pd-save-pass" type="button">Save Password</button>
+                <div class="pd-msg" id="pd-pass-msg"></div>
+              </div>
+            </div>
+
+            <div class="nd-sep"></div>
+
+            <!-- History -->
+            <button class="nd-item" id="btn-history" type="button">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              History
+            </button>
+
+            <!-- Friends -->
+            <button class="nd-item" id="btn-friends" type="button">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              Friends
+              <span class="nd-item-badge" id="nd-friends-badge">0</span>
+            </button>
+
+          </div>
+
+          <div class="nd-sep"></div>
+
+          <div class="nd-items">
+            <!-- Log out -->
+            <button class="nd-item logout" id="btn-logout" type="button">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo + title -->
       <div class="logo-mark">
         <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M8.5 7.5C8.5 6 10 5 12 5s3.5 1 3.5 2.5c0 1.8-1.8 2.6-3.5 3.1-1.7.5-3.5 1.3-3.5 3.4C8.5 15.8 10 17 12 17s3.5-1.2 3.5-3"/></svg>
       </div>
       <span class="header-title">Who Owes Me</span>
-      <div class="header-right">
-        <!-- User pill + profile dropdown -->
-        <div class="user-pill" id="user-pill" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
-          <div class="user-pill-avatar" id="user-pill-av"></div>
-          <span class="user-pill-name" id="user-pill-name"></span>
-          <!-- Chevron -->
-          <svg class="user-pill-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
 
-          <!-- Profile dropdown (positioned inside the pill for correct anchoring) -->
-          <div class="profile-drop" id="profile-drop">
-            <!-- Header: avatar + current username -->
-            <div class="pd-header">
-              <div class="pd-av" id="pd-av"></div>
-              <div>
-                <div class="pd-username" id="pd-username-display"></div>
-                <div class="pd-sub">Account settings</div>
-              </div>
-            </div>
-
-            <div class="pd-body">
-              <!-- Invite / Share link -->
-              <div class="pd-sec-ttl">Your Invite Link</div>
-              <div class="pd-invite-url">
-                <span id="pd-invite-url-text">—</span>
-                <button class="pd-copy-btn" id="pd-copy-btn" type="button">Copy</button>
-              </div>
-              <button class="pd-qr-toggle" id="pd-qr-toggle" type="button">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                  <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 20h3M20 17v3"/>
-                </svg>
-                <span id="pd-qr-label">Show QR code</span>
-              </button>
-              <div class="pd-qr-box" id="pd-qr-box">
-                <div class="pd-qr-frame"><img id="pd-qr-img" src="" alt="QR code" /></div>
-                <div class="pd-qr-hint">Friends scan this to add you instantly</div>
-              </div>
-
-              <div class="pd-divider"></div>
-
-              <!-- Change username -->
-              <div class="pd-sec-ttl">Change Username</div>
-              <div class="pd-field">
-                <label for="pd-new-user">New username</label>
-                <input type="text" id="pd-new-user" placeholder="Enter new username" autocomplete="off" spellcheck="false" />
-              </div>
-              <div class="pd-field">
-                <label for="pd-user-pass">Current password</label>
-                <input type="password" id="pd-user-pass" placeholder="Confirm with password" autocomplete="current-password" />
-              </div>
-              <button class="pd-save" id="pd-save-user" type="button">Save Username</button>
-              <div class="pd-msg" id="pd-user-msg"></div>
-
-              <div class="pd-divider"></div>
-
-              <!-- Change password -->
-              <div class="pd-sec-ttl">Change Password</div>
-              <div class="pd-field">
-                <label for="pd-cur-pass">Current password</label>
-                <input type="password" id="pd-cur-pass" placeholder="••••••••" autocomplete="current-password" />
-              </div>
-              <div class="pd-field">
-                <label for="pd-new-pass">New password</label>
-                <input type="password" id="pd-new-pass" placeholder="••••••••" autocomplete="new-password" />
-              </div>
-              <div class="pd-field">
-                <label for="pd-conf-pass">Confirm new password</label>
-                <input type="password" id="pd-conf-pass" placeholder="••••••••" autocomplete="new-password" />
-              </div>
-              <button class="pd-save" id="pd-save-pass" type="button">Save Password</button>
-              <div class="pd-msg" id="pd-pass-msg"></div>
-            </div>
-          </div>
-        </div>
-        <!-- Friends -->
-        <button class="hdr-btn friends-btn" id="btn-friends" type="button">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
-          Friends
-          <span class="notif-dot" id="notif-dot">0</span>
-        </button>
-        <!-- Logout -->
-        <button class="hdr-btn logout-btn" id="btn-logout" type="button">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-          </svg>
-          Log out
-        </button>
-      </div>
     </div>
   </header>
 
@@ -1227,9 +1445,10 @@
     <div class="fp-sec">
       <div class="fp-sec-ttl">Add a Friend</div>
       <div class="add-row">
-        <input type="text" id="fp-input" placeholder="Enter their username…" autocomplete="off" spellcheck="false" />
+        <input type="text" id="fp-input" placeholder="Search usernames…" autocomplete="off" spellcheck="false" />
         <button class="add-row-btn" id="fp-add" type="button">Add</button>
       </div>
+      <div class="fp-suggestions" id="fp-suggestions"></div>
       <div class="fp-msg" id="fp-msg"></div>
     </div>
 
@@ -1243,6 +1462,17 @@
       <div id="fp-friends-list"></div>
     </div>
   </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     HISTORY PANEL
+════════════════════════════════════════════════ -->
+<div class="history-panel" id="hp-panel" role="dialog" aria-label="Payment History">
+  <div class="hp-head">
+    <span class="hp-title">History</span>
+    <button class="hp-close" id="hp-close" type="button">✕</button>
+  </div>
+  <div class="hp-body" id="hp-body"></div>
 </div>
 
 <!-- ════════════════════════════════════════════════
@@ -1513,12 +1743,12 @@ function startSession(username) {
   debts = getDebts(username);
   lsSet(K_SESS, {username});
 
-  // Update header pill
+  // Update nav trigger avatar
   const color = nameColor(username);
-  const av = document.getElementById('user-pill-av');
+  const av = document.getElementById('nav-trigger-av');
   av.style.background = color;
   av.textContent = initials(username);
-  document.getElementById('user-pill-name').textContent = username;
+  document.getElementById('nav-trigger-name').textContent = username;
 
   authScreen.style.display = 'none';
   appScreen.style.display  = 'block';
@@ -1539,7 +1769,8 @@ function endSession() {
   document.getElementById('d-owed').classList.add('on');
   document.getElementById('d-iowe').classList.remove('on');
   document.getElementById('form-shell').className='form-shell owed';
-  closeFP(); closeModal(); closeProfileDrop();
+  closeFP(); closeHP(); closeModal(); closeProfileDrop();
+  hpFilter = 'all';
   document.getElementById('invite-banner').classList.remove('show');
   appScreen.style.display='none';
   authScreen.style.display='flex';
@@ -1555,17 +1786,22 @@ const fpEl     = document.getElementById('fp');
 const overlay  = document.getElementById('overlay');
 
 function openFP()  { renderFP(); fpEl.classList.add('on'); overlay.classList.add('on'); setTimeout(()=>document.getElementById('fp-input').focus(),100); }
-function closeFP() { fpEl.classList.remove('on'); overlay.classList.remove('on'); }
+function closeFP() {
+  fpEl.classList.remove('on'); overlay.classList.remove('on');
+  document.getElementById('fp-suggestions').classList.remove('open');
+}
 
-document.getElementById('btn-friends').addEventListener('click', openFP);
 document.getElementById('fp-close').addEventListener('click', closeFP);
-overlay.addEventListener('click', closeFP);
 
 function updateBadge() {
   if (!me) return;
   const n = getReqs(me).length;
+  // Dot on the trigger button
   const dot = document.getElementById('notif-dot');
   dot.textContent = n; n>0 ? dot.classList.add('on') : dot.classList.remove('on');
+  // Badge inside the friends row in the dropdown
+  const badge = document.getElementById('nd-friends-badge');
+  badge.textContent = n; n>0 ? badge.classList.add('on') : badge.classList.remove('on');
 }
 
 function renderFP() {
@@ -1619,6 +1855,7 @@ document.getElementById('fp-add').addEventListener('click', ()=>{
   renderFP(); updateBadge(); renderList();
   if (r.ok) {
     input.value='';
+    document.getElementById('fp-suggestions').classList.remove('open');
     msg.textContent=r.data; msg.classList.add('ok');
   } else {
     input.classList.add('err');
@@ -1628,6 +1865,91 @@ document.getElementById('fp-add').addEventListener('click', ()=>{
 
 document.getElementById('fp-input').addEventListener('keydown', e=>{
   if(e.key==='Enter') document.getElementById('fp-add').click();
+});
+
+/* ── Friend search suggestions ───────────────────── */
+function renderFpSuggestions(query) {
+  const sugEl = document.getElementById('fp-suggestions');
+  query = query.trim().toLowerCase();
+  if (!query) { sugEl.classList.remove('open'); sugEl.innerHTML=''; return; }
+
+  const all      = accounts();              // [{username, passwordHash}]
+  const myFriends= getFriends(me).map(f=>f.toLowerCase());
+  const pending  = getReqs(me).map(r=>r.toLowerCase()); // requests I received
+  // requests I already sent to others
+  const sentTo   = all
+    .filter(a => getReqs(a.username).map(r=>r.toLowerCase()).includes(me.toLowerCase()))
+    .map(a => a.username.toLowerCase());
+
+  // Filter: matches query, not me, not already a friend
+  const candidates = all
+    .map(a => a.username)
+    .filter(u =>
+      u.toLowerCase() !== me.toLowerCase() &&
+      !myFriends.includes(u.toLowerCase()) &&
+      u.toLowerCase().includes(query)
+    );
+
+  if (!candidates.length) { sugEl.classList.remove('open'); sugEl.innerHTML=''; return; }
+
+  // Sort: mutual-friends first (share at least 1 friend), then alphabetical
+  const myFriendSet = new Set(myFriends);
+  candidates.sort((a, b) => {
+    const aFriends = getFriends(a).map(f=>f.toLowerCase());
+    const bFriends = getFriends(b).map(f=>f.toLowerCase());
+    const aMutual  = aFriends.filter(f => myFriendSet.has(f)).length;
+    const bMutual  = bFriends.filter(f => myFriendSet.has(f)).length;
+    if (bMutual !== aMutual) return bMutual - aMutual;
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+
+  // Limit to 6 results
+  const shown = candidates.slice(0, 6);
+
+  sugEl.innerHTML = shown.map(u => {
+    const uLow    = u.toLowerCase();
+    const uFriends= getFriends(u).map(f=>f.toLowerCase());
+    const mutual  = uFriends.filter(f => myFriendSet.has(f)).length;
+    const isPending = pending.includes(uLow);
+    const isSent  = sentTo.includes(uLow);
+    let tag = '';
+    if (mutual > 0)   tag = `<span class="fp-sug-tag">${mutual} mutual</span>`;
+    else if (isPending) tag = `<span class="fp-sug-tag" style="color:var(--amber);background:var(--amber-soft);border-color:var(--amber-border)">Incoming</span>`;
+    else if (isSent)  tag = `<span class="fp-sug-tag" style="color:var(--text-muted);background:var(--bg);border-color:var(--border)">Sent</span>`;
+    return `
+      <div class="fp-sug-item" data-sug-user="${esc(u)}">
+        <div class="av av-sm" style="background:${nameColor(u)}">${esc(initials(u))}</div>
+        <span class="fp-sug-name">${esc(u)}</span>
+        ${tag}
+      </div>`;
+  }).join('');
+
+  sugEl.classList.add('open');
+}
+
+document.getElementById('fp-input').addEventListener('input', e=>{
+  renderFpSuggestions(e.target.value);
+});
+
+document.getElementById('fp-suggestions').addEventListener('click', e=>{
+  const item = e.target.closest('[data-sug-user]');
+  if (!item) return;
+  const username = item.dataset.sugUser;
+  document.getElementById('fp-input').value = username;
+  document.getElementById('fp-suggestions').classList.remove('open');
+  document.getElementById('fp-add').click();
+});
+
+// Hide suggestions when input loses focus (small delay so click on item fires first)
+document.getElementById('fp-input').addEventListener('blur', ()=>{
+  setTimeout(()=>{
+    document.getElementById('fp-suggestions').classList.remove('open');
+  }, 150);
+});
+
+// Reopen suggestions if input is refocused with content
+document.getElementById('fp-input').addEventListener('focus', e=>{
+  renderFpSuggestions(e.target.value);
 });
 
 // Delegate panel actions
@@ -1642,6 +1964,108 @@ fpEl.addEventListener('click', e=>{
   if (rm) { removeFriend(rm.dataset.remove); renderFP(); renderList(); }
   if (vw) { closeFP(); openSharedView(vw.dataset.view); }
 });
+
+/* ══════════════════════════════════════════════════
+   HISTORY PANEL
+══════════════════════════════════════════════════ */
+const hpPanel = document.getElementById('hp-panel');
+let hpFilter  = 'all'; // 'all' | 'received' | 'paid'
+
+function openHP()  { renderHP(); hpPanel.classList.add('on'); overlay.classList.add('on'); }
+function closeHP() { hpPanel.classList.remove('on'); overlay.classList.remove('on'); }
+
+document.getElementById('hp-close').addEventListener('click', closeHP);
+
+// Also close when overlay is clicked (shared overlay element — check which panel is open)
+overlay.addEventListener('click', () => { closeFP(); closeHP(); });
+
+function renderHP() {
+  const body = document.getElementById('hp-body');
+  const paid = debts.filter(d => d.paid);
+
+  // Summary stats
+  const paidOwed = debts.filter(d => d.paid && d.direction === 'owed_to_me').reduce((s,d) => s+d.amount, 0);
+  const paidIowe = debts.filter(d => d.paid && d.direction === 'i_owe').reduce((s,d) => s+d.amount, 0);
+
+  // Apply direction filter
+  const visible = paid.filter(d => {
+    if (hpFilter === 'received') return d.direction === 'owed_to_me';
+    if (hpFilter === 'paid')     return d.direction === 'i_owe';
+    return true;
+  });
+
+  // Sort newest first
+  const sorted = [...visible].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  if (!sorted.length) {
+    body.innerHTML = `
+      <div class="hp-summary">
+        <div class="hp-stat"><div class="hp-stat-lbl">They paid me</div><div class="hp-stat-val g">${fmt(paidOwed)}</div></div>
+        <div class="hp-stat"><div class="hp-stat-lbl">I paid back</div><div class="hp-stat-val b">${fmt(paidIowe)}</div></div>
+      </div>
+      <div class="hp-empty">
+        <div class="hp-empty-icon">📭</div>
+        <div class="hp-empty-ttl">No settled debts yet</div>
+        <div class="hp-empty-desc">Paid debts will appear here.</div>
+      </div>`;
+    return;
+  }
+
+  // Group by month
+  const months = new Map();
+  for (const d of sorted) {
+    const key = new Date(d.date).toLocaleDateString('en-US', {month:'long', year:'numeric'});
+    if (!months.has(key)) months.set(key, []);
+    months.get(key).push(d);
+  }
+
+  let html = `
+    <div class="hp-summary">
+      <div class="hp-stat"><div class="hp-stat-lbl">They paid me</div><div class="hp-stat-val g">${fmt(paidOwed)}</div></div>
+      <div class="hp-stat"><div class="hp-stat-lbl">I paid back</div><div class="hp-stat-val b">${fmt(paidIowe)}</div></div>
+    </div>
+    <div class="hp-filter-row">
+      <button class="hp-fil ${hpFilter==='all'?'on':''}"      data-hf="all">All</button>
+      <button class="hp-fil ${hpFilter==='received'?'on':''}" data-hf="received">They paid me</button>
+      <button class="hp-fil ${hpFilter==='paid'?'on':''}"     data-hf="paid">I paid back</button>
+    </div>`;
+
+  for (const [month, entries] of months) {
+    html += `<div class="hp-month">${month}</div>`;
+    for (const d of entries) {
+      const isOwed = d.direction === 'owed_to_me';
+      const amtCls = isOwed ? 'r' : 'b';
+      const dirLbl = isOwed ? 'They paid me' : 'I paid back';
+      html += `
+        <div class="hp-card">
+          <div class="hp-card-av" style="background:${nameColor(d.person)}">${esc(initials(d.person))}</div>
+          <div class="hp-card-info">
+            <div class="hp-card-person">${esc(d.person)}</div>
+            <div class="hp-card-reason">${esc(d.reason)}</div>
+          </div>
+          <div class="hp-card-right">
+            <div class="hp-card-amt ${amtCls}">${fmt(d.amount)}</div>
+            <div class="hp-card-date">${fmtDate(d.date)}</div>
+            <div class="hp-card-dir">${dirLbl}</div>
+          </div>
+        </div>`;
+    }
+  }
+
+  body.innerHTML = html;
+
+  // Filter button listeners
+  body.querySelectorAll('[data-hf]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      hpFilter = btn.dataset.hf;
+      renderHP();
+    });
+  });
+}
+
+// Re-render history if open after any debt change
+const _origRender = render;
+function render() { _origRender(); if (hpPanel.classList.contains('on')) renderHP(); }
 
 /* ══════════════════════════════════════════════════
    SHARED VIEW MODAL
@@ -2005,56 +2429,81 @@ document.getElementById('debt-list').addEventListener('click', e=>{
 /* ══════════════════════════════════════════════════
    PROFILE DROPDOWN
 ══════════════════════════════════════════════════ */
-const userPill   = document.getElementById('user-pill');
-const profileDrop= document.getElementById('profile-drop');
+/* ══════════════════════════════════════════════════
+   NAV MENU DROPDOWN
+══════════════════════════════════════════════════ */
+const navMenu    = document.getElementById('nav-menu');
+const navTrigger = document.getElementById('nav-trigger');
+const navDrop    = document.getElementById('nav-drop');
 
-function openProfileDrop() {
-  // Populate display fields with current username
+function openNavDrop() {
   const color = nameColor(me);
   const pdAv  = document.getElementById('pd-av');
   pdAv.style.background = color;
   pdAv.textContent = initials(me);
   document.getElementById('pd-username-display').textContent = me;
 
-  // Clear all inputs and messages
+  // Clear account form inputs/messages
   ['pd-new-user','pd-user-pass','pd-cur-pass','pd-new-pass','pd-conf-pass']
     .forEach(id => { const el=document.getElementById(id); el.value=''; el.classList.remove('err'); });
   ['pd-user-msg','pd-pass-msg']
     .forEach(id => { const el=document.getElementById(id); el.className='pd-msg'; });
 
-  // Reset QR box to closed each time the dropdown opens
+  // Reset QR to closed
   document.getElementById('pd-qr-box').classList.remove('open');
   document.getElementById('pd-qr-label').textContent = 'Show QR code';
 
-  // Populate invite link and QR
   renderShareSection();
 
-  userPill.classList.add('open');
-  profileDrop.classList.add('open');
-  userPill.setAttribute('aria-expanded','true');
+  navTrigger.classList.add('open');
+  navDrop.classList.add('open');
+  navTrigger.setAttribute('aria-expanded','true');
 }
 
-function closeProfileDrop() {
-  userPill.classList.remove('open');
-  profileDrop.classList.remove('open');
-  userPill.setAttribute('aria-expanded','false');
+function closeNavDrop() {
+  navTrigger.classList.remove('open');
+  navDrop.classList.remove('open');
+  navTrigger.setAttribute('aria-expanded','false');
 }
 
-// Toggle on pill click; stop propagation so the document listener doesn't immediately close it
-userPill.addEventListener('click', e => {
-  // Don't toggle if the click originated inside an input or button inside the dropdown
-  if (e.target.closest('input, button')) return;
-  profileDrop.classList.contains('open') ? closeProfileDrop() : openProfileDrop();
+// Alias so existing callers still work
+function openProfileDrop()  { openNavDrop(); }
+function closeProfileDrop() { closeNavDrop(); }
+
+// Trigger button toggles dropdown
+navTrigger.addEventListener('click', e => {
+  e.stopPropagation();
+  navDrop.classList.contains('open') ? closeNavDrop() : openNavDrop();
 });
 
-// Close when clicking anywhere outside
-document.addEventListener('click', e => {
-  if (!userPill.contains(e.target)) closeProfileDrop();
-});
+// Clicks inside the dropdown don't bubble up to close it
+navDrop.addEventListener('click', e => e.stopPropagation());
+
+// Close when clicking outside
+document.addEventListener('click', () => closeNavDrop());
 
 // Close on Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeProfileDrop();
+  if (e.key === 'Escape') closeNavDrop();
+});
+
+// Account Settings section toggle
+document.getElementById('nd-account-toggle').addEventListener('click', () => {
+  const body = document.getElementById('nd-account-body');
+  const btn  = document.getElementById('nd-account-toggle');
+  const isOpen = body.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  if (isOpen) renderShareSection();
+});
+
+// History row → close nav + open history panel
+document.getElementById('btn-history').addEventListener('click', () => {
+  closeNavDrop(); openHP();
+});
+
+// Friends row → close nav + open friends panel
+document.getElementById('btn-friends').addEventListener('click', () => {
+  closeNavDrop(); openFP();
 });
 
 /* ── Change Username ─────────────────────────────── */
@@ -2107,13 +2556,11 @@ document.getElementById('pd-save-user').addEventListener('click', async () => {
   me = newUsername;
   lsSet(K_SESS, { username: me });
 
-  // Update header pill
+  // Update nav trigger avatar + dropdown header
   const color = nameColor(me);
-  const av    = document.getElementById('user-pill-av');
+  const av    = document.getElementById('nav-trigger-av');
   av.style.background = color; av.textContent = initials(me);
-  document.getElementById('user-pill-name').textContent = me;
-
-  // Update dropdown header
+  document.getElementById('nav-trigger-name').textContent = me;
   const pdAv = document.getElementById('pd-av');
   pdAv.style.background = color; pdAv.textContent = initials(me);
   document.getElementById('pd-username-display').textContent = me;
